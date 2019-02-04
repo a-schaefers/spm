@@ -37,16 +37,19 @@ while true; do
     user_custom_batt_low() {
         # If 10-20% percent battery
         if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+            notify-send "Battery: ${batt}%"
             xbacklight -set 20
         fi
         # If 5-10% percent battery
         if [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
+            notify-send "Battery: ${batt}%"
             xbacklight -set 10
         fi
         # If 5% battery or less
         if [ "$batt" -lt 6 ]; then
-            # NOTE: consider running a system suspend or hibernate command here instead
+            notify-send "Battery: ${batt}%"
             xbacklight -set 5
+            # NOTE: consider running a suspend command here
         fi
     }
     # arbitrary code block that runs when the battery state changes to Charging or Full
@@ -79,7 +82,6 @@ while true; do
                 if [ ! -f "/tmp/battmon/$thresh" ]; then
                     if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
                     touch "/tmp/battmon/$thresh"
-                    notify-send "Battery: ${batt}%"
                     user_custom_batt_low
                 fi
             fi
