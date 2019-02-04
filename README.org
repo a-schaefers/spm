@@ -6,6 +6,5 @@ The "acpi" command is used to determine the current battery level
 
 The "notify-send" command (libnotify) is used to send desktop notifications
 
-* TODO
-** add optional customization section to run advanced actions per threshhold
-This could be used to e.g. lower the laptop brightness level using lux https://github.com/Ventto/lux
+* TODO add optional customization section
+This could be used to e.g. lower the laptop brightness level using lux https://github.com/Ventto/lux per threshhold.
