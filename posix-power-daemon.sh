@@ -41,7 +41,7 @@ while true; do
         if [ "$batt" -eq 5 ]; then echo "5 backlight set"; xbacklight -set 5; fi
     }
 
-    # an arbitrary code block that runs once when out of the warning threshholds
+    # arbitrary code block that runs once when out of the warning threshholds
     user_custom_batt_normal() {
         xbacklight -set 100 && echo "backlight set to 100"
     }
