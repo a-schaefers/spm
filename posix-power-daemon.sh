@@ -31,17 +31,14 @@ while true; do
     ############################################################################
     # battery polling frequency
     sleep 20
-
     # battery percentages that send notifications
     THRESHHOLDS="20 10 5"
-
     # arbitrary code block that runs when a battery warning threshhold is hit
     user_custom_batt_low() {
         if [ "$batt" -eq 20 ]; then xbacklight -set 20; fi
         if [ "$batt" -eq 10 ]; then xbacklight -set 10; fi
         if [ "$batt" -eq 5 ]; then xbacklight -set 5; fi
     }
-
     # arbitrary code block that runs once when the battery % rises above the highest threshhold
     user_custom_batt_normal() {
         xbacklight -set 100
@@ -55,7 +52,6 @@ while true; do
     if [ ! -d /tmp/battmon ];then mkdir /tmp/battmon || bail "/tmp is not writeable" ; fi
     batt="$(acpi | awk '{ print $4 }')"
     batt="${batt%\%*}"
-
     intcheck () {
         case ${1#[-+]} in
             *[!0-9]* | '') return 1 ;;
