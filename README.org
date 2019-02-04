@@ -1,40 +1,34 @@
-* What
-Weighing in at ~70 lines of code, this is my no-frills, POSIX shell power manager.
-By default it sends desktop notifications and adjusts brightness based on power threshholds.
+* KISS power manager
+Weighing in at ~70 lines of shell script, simple-power-manager tries to be a KISS (keep-it-simple-stupid) power manager.
+By default it sends desktop notifications and adjusts brightness based on power threshholds, is easily programmable and
+ can be copied and pasted directly in to .xinitrc.
 
-* How
-The script can be copied and pasted directly in to .xinitrc.
+* Easy customization
 
-Make sure to set the variables and user_custom functions accordingly in the comment block at the top of the script. (shown below)
+ Modify the user_custom functions accordingly in the comment block at the top of the script. (shown below)
 
 #+BEGIN_SRC bash
-    ############################################################################
-    # battery polling frequency
-    sleep 15
-    # battery % threshholds that trigger events
-    LOW_BATT_THRESHHOLDS="20 10 5"
-    # battery Discharging user_custom function
-    user_custom_batt_low() {
-        if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
-            # 10-20% percent battery
-            notify-send "Battery: ${batt}%"
-            xbacklight -set 20
-        elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
-            # 5-10% percent battery
-            notify-send "Battery: ${batt}%"
-            xbacklight -set 10
-        elif [ "$batt" -lt 6 ]; then
-            # If 5% battery or less - NOTE: consider running a suspend command
-            notify-send "Battery: ${batt}%"
-            xbacklight -set 5
-        fi
-    }
-    # battery Charging / Full user_custom function
-    user_custom_batt_normal() {
-        notify-send "Battery: $acpi_status ${batt}%"
-        xbacklight -set 100
-    }
-    ############################################################################
+  user_custom_low_battery_hook() {
+      if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+          # 10-20% percent battery
+          notify-send "Battery: ${batt}%"
+          xbacklight -set 20
+      elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
+          # 5-10% percent battery
+          notify-send "Battery: ${batt}%"
+          xbacklight -set 10
+          # If 5% battery or less
+      elif [ "$batt" -lt 6 ]; then
+          notify-send "Battery: ${batt}%"
+          xbacklight -set 5
+      fi
+  }
+
+  user_custom_battery_normal_hook() {
+      # battery Charging / Full
+      notify-send "Battery: $acpi_status ${batt}%"
+      xbacklight -set 100
+  }
 #+END_SRC
 
 * Dependencies:

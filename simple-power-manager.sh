@@ -28,33 +28,39 @@
 # The user_custom_batt_low() is configured for xbacklight/acpilight already-- users of lux, light or whatever will need to customize it.
 
 while true; do
-  ############################################################################
-  # battery polling frequency
-  sleep 15
-  # battery % threshholds that trigger events
-  LOW_BATT_THRESHHOLDS="20 10 5"
-  # battery Discharging user_custom function
-  user_custom_batt_low() {
-      if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
-          # 10-20% percent battery
-          notify-send "Battery: ${batt}%"
-          xbacklight -set 20
-      elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
-          # 5-10% percent battery
-          notify-send "Battery: ${batt}%"
-          xbacklight -set 10
-      elif [ "$batt" -lt 6 ]; then
-          # If 5% battery or less - NOTE: consider running a suspend command
-          notify-send "Battery: ${batt}%"
-          xbacklight -set 5
-      fi
-  }
-  # battery Charging / Full user_custom function
-  user_custom_batt_normal() {
-      notify-send "Battery: $acpi_status ${batt}%"
-      xbacklight -set 100
-  }
-  ############################################################################
+    ############################################################################
+    # battery polling frequency
+    sleep 15
+
+    # battery % threshholds that trigger events
+    LOW_BATT_THRESHHOLDS="20 10 5"
+
+    # if trigger has not already been fired, and if battery % is less than or equal
+    # to a threshhold and if battery state is Discharging, then run user_custom_low_battery_hook
+    user_custom_low_battery_hook() {
+        if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+            # 10-20% percent battery
+            notify-send "Battery: ${batt}%"
+            xbacklight -set 20
+        elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
+            # 5-10% percent battery
+            notify-send "Battery: ${batt}%"
+            xbacklight -set 10
+        elif [ "$batt" -lt 6 ]; then
+            # If 5% battery or less
+            notify-send "Battery: ${batt}%"
+            xbacklight -set 5
+        fi
+    }
+
+    # if trigger has not already been fired, and if battery is state Charging or
+    # Full, then run user_custom_battery_normal_hook
+    user_custom_battery_normal_hook() {
+        # battery Charging / Full
+        notify-send "Battery: $acpi_status ${batt}%"
+        xbacklight -set 100
+    }
+    ############################################################################
     bail() {
         [ $# -gt 0 ] && printf -- "%s\n" "$*"
         break
@@ -79,7 +85,7 @@ while true; do
                 if [ ! -f "/tmp/battmon/$thresh" ]; then
                     if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
                     touch "/tmp/battmon/$thresh"
-                    user_custom_batt_low
+                    user_custom_low_battery_hook
                 fi
             fi
         done
@@ -88,7 +94,7 @@ while true; do
     then
         if [ ! -f "/tmp/battmon/100" ];then
             rm /tmp/battmon/*
-            user_custom_batt_normal
+            user_custom_battery_normal_hook
             touch /tmp/battmon/100
         fi
     fi
