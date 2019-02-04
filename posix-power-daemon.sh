@@ -30,16 +30,25 @@
 while true; do
     ############################################################################
     # battery polling frequency
-    sleep 20
-    # battery percentages that send notifications
-    THRESHHOLDS="20 10 5"
+    sleep 15
+    # battery % threshholds that trigger events
+    LOW_BATT_THRESHHOLDS="20 10 5"
     # arbitrary code block that runs when a battery warning threshhold is hit
     user_custom_batt_low() {
-        if [ "$batt" -eq 20 ]; then xbacklight -set 20; fi
-        if [ "$batt" -eq 10 ]; then xbacklight -set 10; fi
-        if [ "$batt" -eq 5 ]; then xbacklight -set 5; fi
+        # If 10-20% percent battery
+        if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+            xbacklight -set 20
+        fi
+        # If 5-10% percent battery
+        if [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
+            xbacklight -set 10
+        fi
+        # If 5% battery or less
+        if [ "$batt" -lt 6 ]; then
+            systemctl suspend -set 5
+        fi
     }
-    # arbitrary code block that runs once when the battery % rises above the highest threshhold
+    # arbitrary code block that runs when the battery state changes to Charging or Full
     user_custom_batt_normal() {
         xbacklight -set 100
     }
@@ -50,8 +59,11 @@ while true; do
     }
     command -v acpi > /dev/null || bail "acpi not found"
     if [ ! -d /tmp/battmon ];then mkdir /tmp/battmon || bail "/tmp is not writeable" ; fi
-    batt="$(acpi | awk '{ print $4 }')"
+    acpi="$(acpi)"
+    batt="$(echo "$acpi" | awk '{ print $4 }')"
     batt="${batt%\%*}"
+    acpi_status="$(echo "$acpi" | awk '{ print $3 }')"
+    acpi_status="${acpi_status%,}"
     intcheck () {
         case ${1#[-+]} in
             *[!0-9]* | '') return 1 ;;
@@ -59,24 +71,24 @@ while true; do
         esac
     }
     intcheck "$batt" || bail "$batt is not an integer"
-    echo "$THRESHHOLDS" | tr ' ' '\n' | while read -r thresh; do
-        if [ "$batt" -eq "$thresh" ]; then
-            if [ ! -f "/tmp/battmon/$thresh" ]; then
-                if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
-                touch "/tmp/battmon/$thresh"
-                notify-send "Battery: ${batt}%"
-                user_custom_batt_low
+    if [ "$acpi_status" = "Discharging" ];then
+        echo "$LOW_BATT_THRESHHOLDS" | tr ' ' '\n' | while read -r thresh; do
+            if [ "$batt" -eq "$thresh" ] || [ "$batt" -lt "$thresh" ]; then
+                if [ ! -f "/tmp/battmon/$thresh" ]; then
+                    if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
+                    touch "/tmp/battmon/$thresh"
+                    notify-send "Battery: ${batt}%"
+                    user_custom_batt_low
+                fi
             fi
+        done
+    fi
+    if [ "$acpi_status" = "Charging" ] || [ "$acpi_status" = "Full" ]
+    then
+        if [ ! -f "/tmp/battmon/100" ];then
+            rm /tmp/battmon/*
+            user_custom_batt_normal
+            touch /tmp/battmon/100
         fi
-    done
-    for file in /tmp/battmon/*; do
-        if [ ! -f "$file" ]; then
-            if [ ! -f "/tmp/battmon/100" ];then
-                user_custom_batt_normal
-                touch /tmp/battmon/100
-            fi
-            break
-        fi
-        if [ "$batt" -gt "${file##*/}" ]; then rm "$file"; fi
-    done
+    fi
 done &
