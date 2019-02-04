@@ -1,8 +1,8 @@
 * What
-A POSIX shell daemon that sends notifications on low laptop battery and lowers brightness accordingly.
+In the spirit of minimalists, KISS, this is a no-frills POSIX shell daemon that sends notifications on low laptop battery and lowers brightness accordingly.
 
 * How
-The script can be placed in .xinitrc or similar.
+The script can be copied and pasted directly in to .xinitrc or similar.
 
 Make sure to set the variables and user_custom functions accordingly in the comment block at the top of the script.
 
@@ -32,3 +32,5 @@ Make sure to set the variables and user_custom functions accordingly in the comm
 The "acpi" command is used to determine the current battery level
 
 The "notify-send" command (libnotify) is used to send desktop notifications
+
+The user_custom_batt_low() is configured for xbacklight/acpilight already-- users of lux, light or whatever will need to customize accordingly!
