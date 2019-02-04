@@ -1,5 +1,6 @@
 * What
-This is a no-frills, POSIX shell power manager daemon that sends desktop notifications and runs user custom code on power events.
+Weighing in at 56 lines of code, this is my no-frills, POSIX shell power manager.
+It sends desktop notifications and runs user custom code.
 
 * How
 The script can be copied and pasted directly in to .xinitrc or similar.
