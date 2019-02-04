@@ -28,33 +28,33 @@
 # The user_custom_batt_low() is configured for xbacklight/acpilight already-- users of lux, light or whatever will need to customize it.
 
 while true; do
-    ############################################################################
-    # battery polling frequency
-    sleep 15
-    # battery % threshholds that trigger events
-    LOW_BATT_THRESHHOLDS="20 10 5"
-    # arbitrary code block that runs when a battery warning threshhold is hit
-    user_custom_batt_low() {
-        if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
-            # 10-20% percent battery
-            notify-send "Battery: ${batt}%"
-            xbacklight -set 20
-        elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
-            # 5-10% percent battery
-            notify-send "Battery: ${batt}%"
-            xbacklight -set 10
-        elif [ "$batt" -lt 6 ]; then
-            # If 5% battery or less - NOTE: consider running a suspend command
-            notify-send "Battery: ${batt}%"
-            xbacklight -set 5
-        fi
-    }
-    # arbitrary code block that runs when the battery state changes to Charging or Full
-    user_custom_batt_normal() {
-        notify-send "Battery: $acpi_status ${batt}%"
-        xbacklight -set 100
-    }
-    ############################################################################
+  ############################################################################
+  # battery polling frequency
+  sleep 15
+  # battery % threshholds that trigger events
+  LOW_BATT_THRESHHOLDS="20 10 5"
+  # battery discharging user_custom function
+  user_custom_batt_low() {
+      if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+          # 10-20% percent battery
+          notify-send "Battery: ${batt}%"
+          xbacklight -set 20
+      elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
+          # 5-10% percent battery
+          notify-send "Battery: ${batt}%"
+          xbacklight -set 10
+      elif [ "$batt" -lt 6 ]; then
+          # If 5% battery or less - NOTE: consider running a suspend command
+          notify-send "Battery: ${batt}%"
+          xbacklight -set 5
+      fi
+  }
+  # battery Charging / Full user_custom function
+  user_custom_batt_normal() {
+      notify-send "Battery: $acpi_status ${batt}%"
+      xbacklight -set 100
+  }
+  ############################################################################
     bail() {
         [ $# -gt 0 ] && printf -- "%s\n" "$*"
         break
