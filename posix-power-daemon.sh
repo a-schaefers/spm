@@ -33,7 +33,7 @@ while true; do
   sleep 15
   # battery % threshholds that trigger events
   LOW_BATT_THRESHHOLDS="20 10 5"
-  # battery discharging user_custom function
+  # battery Discharging user_custom function
   user_custom_batt_low() {
       if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
           # 10-20% percent battery
