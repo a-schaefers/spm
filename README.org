@@ -1,6 +1,6 @@
 * What
 Weighing in at ~70 lines of code, this is my no-frills, POSIX shell power manager.
-It sends desktop notifications and runs user custom code.
+By default it sends desktop notifications and adjusts screen brightness.
 
 * How
 The script can be copied and pasted directly in to .xinitrc or similar.
