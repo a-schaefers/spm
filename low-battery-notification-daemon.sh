@@ -26,38 +26,62 @@
 # The "acpi" command is used to determine the current battery level
 # The "notify-send" command (libnotify) is used to send desktop notifications
 
-# TODO add optional customization section to run advanced actions per threshhold
-
-# low battery notifier
 while true; do
-    # battery percentages that send notifications
-    THRESHHOLDS="20 10 5 4 3 2 1"
+    ############################################################################
     # battery polling frequency
     sleep 20
-    [ -n "$(command -v acpi)" ] || break
-    [ ! -d /tmp/battmon ] && mkdir /tmp/battmon
+
+    # battery percentages that send notifications
+    THRESHHOLDS="20 10 5"
+
+    # arbitrary code block  that runs when battery warning threshhold is hit
+    user_custom_batt_low() {
+        if [ "$batt" -eq 20 ]; then echo "20 backlight set"; xbacklight -set 20; fi
+        if [ "$batt" -eq 10 ]; then echo "10 backlight set"; xbacklight -set 10; fi
+        if [ "$batt" -eq 5 ]; then echo "5 backlight set"; xbacklight -set 5; fi
+    }
+
+    # an arbitrary code block that runs once when out of the warning threshholds
+    user_custom_batt_normal() {
+        xbacklight -set 100 && echo "backlight set to 100"
+    }
+    ############################################################################
+    bail() {
+        [ $# -gt 0 ] && printf -- "%s\n" "$*"
+        break
+    }
+    command -v acpi > /dev/null || bail "acpi not found"
+    if [ ! -d /tmp/battmon ];then mkdir /tmp/battmon || bail "/tmp is not writeable" ; fi
     batt="$(acpi | awk '{ print $4 }')"
     batt="${batt%\%*}"
+
     intcheck () {
         case ${1#[-+]} in
             *[!0-9]* | '') return 1 ;;
             * ) return 0 ;;
         esac
     }
-    intcheck "$batt"
-    [ $? -eq 1 ] && break
+    intcheck "$batt" || bail "$batt is not an integer"
     echo "$THRESHHOLDS" | tr ' ' '\n' | while read -r thresh; do
         if [ "$batt" -eq "$thresh" ]; then
             if [ ! -f "/tmp/battmon/$thresh" ]; then
+                if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
                 touch "/tmp/battmon/$thresh"
                 notify-send "Battery: ${batt}%"
+                user_custom_batt_low
             fi
         fi
     done
+    batt=40
+
     for file in /tmp/battmon/*; do
-        [ -f "$file" ] || break
-        intcheck "${file##*/}"
-        [ $? -eq 1 ] && break
+        if [ ! -f "$file" ]; then
+            if [ ! -f "/tmp/battmon/100" ];then
+                user_custom_batt_normal
+                touch /tmp/battmon/100
+            fi
+            break
+        fi
         if [ "$batt" -gt "${file##*/}" ]; then rm "$file"; fi
     done
 done &

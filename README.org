@@ -1,10 +1,34 @@
 * What
-A posix shell daemon that sends notifications on low laptop battery. The script can be placed in .xinitrc or similar.
+A POSIX shell daemon that sends notifications on low laptop battery and lowers brightness accordingly.
+
+* How
+The script can be placed in .xinitrc or similar.
+
+Make sure to set the variables and user_custom functions accordingly in the comment block at the top of the script.
+
+#+BEGIN_SRC bash
+  ############################################################################
+  # battery polling frequency
+  sleep 20
+
+  # battery percentages that send notifications
+  THRESHHOLDS="20 10 5"
+
+  # arbitrary code block  that runs when battery warning threshhold is hit
+  user_custom_batt_low() {
+      if [ "$batt" -eq 20 ]; then echo "20 backlight set"; xbacklight -set 20; fi
+      if [ "$batt" -eq 10 ]; then echo "10 backlight set"; xbacklight -set 10; fi
+      if [ "$batt" -eq 5 ]; then echo "5 backlight set"; xbacklight -set 5; fi
+  }
+
+  # an arbitrary code block that runs once when out of the warning threshholds
+  user_custom_batt_normal() {
+      xbacklight -set 100 && echo "backlight set to 100"
+  }
+  ############################################################################
+#+END_SRC
 
 * Dependencies:
 The "acpi" command is used to determine the current battery level
 
 The "notify-send" command (libnotify) is used to send desktop notifications
-
-* Still TODO - Add optional user customization section
-This could be used to e.g. lower the laptop brightness level using lux https://github.com/Ventto/lux per threshhold.
