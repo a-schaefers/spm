@@ -37,7 +37,7 @@ while true; do
     [ -n "$(command -v acpi)" ] || break
     [ ! -d /tmp/battmon ] && mkdir /tmp/battmon
     batt="$(acpi | awk '{ print $4 }')"
-    batt="${batt%\%,}"
+    batt="${batt%\%*}"
     intcheck () {
         case ${1#[-+]} in
             *[!0-9]* | '') return 1 ;;
