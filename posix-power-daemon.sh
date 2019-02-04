@@ -51,6 +51,7 @@ while true; do
     }
     # arbitrary code block that runs when the battery state changes to Charging or Full
     user_custom_batt_normal() {
+        notify-send "Battery: $acpi_status ${batt}%"
         xbacklight -set 100
     }
     ############################################################################
