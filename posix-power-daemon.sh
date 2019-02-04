@@ -72,8 +72,6 @@ while true; do
             fi
         fi
     done
-    batt=40
-
     for file in /tmp/battmon/*; do
         if [ ! -f "$file" ]; then
             if [ ! -f "/tmp/battmon/100" ];then
