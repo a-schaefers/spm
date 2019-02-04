@@ -1,11 +1,11 @@
 * What
 Weighing in at ~70 lines of code, this is my no-frills, POSIX shell power manager.
-By default it sends desktop notifications and adjusts screen brightness.
+By default it sends desktop notifications and adjusts brightness based on power threshholds.
 
 * How
-The script can be copied and pasted directly in to .xinitrc or similar.
+The script can be copied and pasted directly in to .xinitrc.
 
-Make sure to set the variables and user_custom functions accordingly in the comment block at the top of the script.
+Make sure to set the variables and user_custom functions accordingly in the comment block at the top of the script. (shown below)
 
 #+BEGIN_SRC bash
     ############################################################################
