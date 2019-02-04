@@ -1,5 +1,5 @@
 * What
-In the spirit of minimalists, KISS, this is a no-frills POSIX shell daemon that sends notifications on low laptop battery and lowers brightness accordingly.
+This is a no-frills, POSIX shell power manager daemon that sends desktop notifications and runs user custom code on power events.
 
 * How
 The script can be copied and pasted directly in to .xinitrc or similar.
@@ -14,14 +14,14 @@ Make sure to set the variables and user_custom functions accordingly in the comm
   # battery percentages that send notifications
   THRESHHOLDS="20 10 5"
 
-  # arbitrary code block  that runs when battery warning threshhold is hit
+  # arbitrary code block that runs when battery warning threshhold is hit
   user_custom_batt_low() {
       if [ "$batt" -eq 20 ]; then echo "20 backlight set"; xbacklight -set 20; fi
       if [ "$batt" -eq 10 ]; then echo "10 backlight set"; xbacklight -set 10; fi
       if [ "$batt" -eq 5 ]; then echo "5 backlight set"; xbacklight -set 5; fi
   }
 
-  # an arbitrary code block that runs once when out of the warning threshholds
+  # arbitrary code block that runs once when out of the warning threshholds
   user_custom_batt_normal() {
       xbacklight -set 100 && echo "backlight set to 100"
   }
