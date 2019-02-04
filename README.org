@@ -1,5 +1,5 @@
 * What
-Weighing in at 56 lines of code, this is my no-frills, POSIX shell power manager.
+Weighing in at ~50 lines of code, this is my no-frills, POSIX shell power manager.
 It sends desktop notifications and runs user custom code.
 
 * How
