@@ -1,5 +1,5 @@
 * What
-Weighing in at ~50 lines of code, this is my no-frills, POSIX shell power manager.
+Weighing in at ~67 lines of code, this is my no-frills, POSIX shell power manager.
 It sends desktop notifications and runs user custom code.
 
 * How
@@ -25,7 +25,8 @@ Make sure to set the variables and user_custom functions accordingly in the comm
         fi
         # If 5% battery or less
         if [ "$batt" -lt 6 ]; then
-            systemctl suspend -set 5
+            # NOTE: consider running a system suspend or hibernate command here instead
+            xbacklight -set 5
         fi
     }
     # arbitrary code block that runs when the battery state changes to Charging or Full

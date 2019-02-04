@@ -45,7 +45,8 @@ while true; do
         fi
         # If 5% battery or less
         if [ "$batt" -lt 6 ]; then
-            systemctl suspend -set 5
+            # NOTE: consider running a system suspend or hibernate command here instead
+            xbacklight -set 5
         fi
     }
     # arbitrary code block that runs when the battery state changes to Charging or Full
