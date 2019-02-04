@@ -3,6 +3,7 @@ A posix shell daemon that sends notifications on low laptop battery. The script 
 
 * Dependencies:
 The "acpi" command is used to determine the current battery level
+
 The "notify-send" command (libnotify) is used to send desktop notifications
 
 * TODO
