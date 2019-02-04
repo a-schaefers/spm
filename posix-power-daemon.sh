@@ -34,16 +34,16 @@ while true; do
     # battery percentages that send notifications
     THRESHHOLDS="20 10 5"
 
-    # arbitrary code block  that runs when battery warning threshhold is hit
+    # arbitrary code block that runs when a battery warning threshhold is hit
     user_custom_batt_low() {
-        if [ "$batt" -eq 20 ]; then echo "20 backlight set"; xbacklight -set 20; fi
-        if [ "$batt" -eq 10 ]; then echo "10 backlight set"; xbacklight -set 10; fi
-        if [ "$batt" -eq 5 ]; then echo "5 backlight set"; xbacklight -set 5; fi
+        if [ "$batt" -eq 20 ]; then xbacklight -set 20; fi
+        if [ "$batt" -eq 10 ]; then xbacklight -set 10; fi
+        if [ "$batt" -eq 5 ]; then xbacklight -set 5; fi
     }
 
-    # arbitrary code block that runs once when out of the warning threshholds
+    # arbitrary code block that runs once when the battery % rises above the highest threshhold
     user_custom_batt_normal() {
-        xbacklight -set 100 && echo "backlight set to 100"
+        xbacklight -set 100
     }
     ############################################################################
     bail() {
