@@ -25,6 +25,7 @@
 # Dependencies:
 # The "acpi" command is used to determine the current battery level
 # The "notify-send" command (libnotify) is used to send desktop notifications
+# The user_custom_batt_low() is configured for xbacklight/acpilight already-- users of lux, light or whatever will need to customize it.
 
 while true; do
     ############################################################################
