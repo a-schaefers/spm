@@ -49,17 +49,17 @@ while true; do
 
         elif [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
             # 10-20% battery
-            notify-send "Battery: ${batt}%"
+            notify-send "Battery: $batt"
             xbacklight -set 20
 
         elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
             # 5-10% battery
-            notify-send "Battery: ${batt}%"
+            notify-send "Battery: $batt"
             xbacklight -set 10
 
         elif [ "$batt" -lt 6 ]; then
             # 5% battery or less
-            notify-send "Battery: ${batt}%"
+            notify-send "Battery: $batt"
             xbacklight -set 5
         fi
     }
@@ -68,7 +68,7 @@ while true; do
     # Full, then run user_custom_battery_normal_hook
     user_custom_battery_normal_hook() {
         # battery Charging / Full
-        notify-send "Battery: $acpi_status ${batt}%"
+        notify-send "Battery: $acpi_status $batt"
         xbacklight -set 80
     }
     ############################################################################
