@@ -30,29 +30,37 @@
 while true; do
     ############################################################################
     # battery polling frequency
-    sleep 15
+    sleep 5
 
     # battery % threshholds that trigger events
-    LOW_BATT_THRESHHOLDS="20 10 5"
+    BATT_THRESHHOLDS="99 80 40 20 10 5"
 
     # if trigger has not already been fired, and if battery % is less than or equal
     # to a threshhold and if battery state is Discharging, then run user_custom_low_battery_hook
     user_custom_low_battery_hook() {
-        if [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
-            # 10-20% percent battery
+        if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
+            # 80-99% battery
+            echo # do nothing
+        elif [ "$batt" -lt 81 ] && [ "$batt" -gt 40 ]; then
+            # 40-80% battery
+            echo # do nothing
+        elif [ "$batt" -lt 41 ] && [ "$batt" -gt 20 ]; then
+            # 20-40% battery
+            echo # do nothing
+        elif [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+            # 10-20% battery
             notify-send "Battery: ${batt}%"
             xbacklight -set 20
         elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
-            # 5-10% percent battery
+            # 5-10% battery
             notify-send "Battery: ${batt}%"
             xbacklight -set 10
         elif [ "$batt" -lt 6 ]; then
-            # If 5% battery or less
+            # 5% battery or less
             notify-send "Battery: ${batt}%"
             xbacklight -set 5
         fi
     }
-
     # if trigger has not already been fired, and if battery state is Charging or
     # Full, then run user_custom_battery_normal_hook
     user_custom_battery_normal_hook() {
@@ -80,7 +88,7 @@ while true; do
     }
     intcheck "$batt" || bail "$batt is not an integer"
     if [ "$acpi_status" = "Discharging" ];then
-        echo "$LOW_BATT_THRESHHOLDS" | tr ' ' '\n' | while read -r thresh; do
+        echo "$BATT_THRESHHOLDS" | tr ' ' '\n' | while read -r thresh; do
             if [ "$batt" -eq "$thresh" ] || [ "$batt" -lt "$thresh" ]; then
                 if [ ! -f "/tmp/battmon/$thresh" ]; then
                     if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
