@@ -1,5 +1,5 @@
 * KISS power manager
-Weighing in at ~70 lines of shell script, simple-power-manager tries to be a KISS (keep-it-simple-stupid) power manager.
+Weighing in at ~80 lines of shell script, simple-power-manager tries to be a KISS (keep-it-simple-stupid) power manager.
 By default it sends desktop notifications and adjusts brightness based on power threshholds, is easily programmable and
  can be copied and pasted directly in to .xinitrc.
 
