@@ -75,11 +75,9 @@ users of lux, light or whatever will need to customize it.
           command -v acpi > /dev/null || bail "acpi not found"
           mkdir /tmp/battmon || bail "/tmp is not writeable"
       fi
-      acpi="$(acpi)"
-      batt="$(echo "$acpi" | awk '{ print $4 }')"
-      batt="${batt%\%*}"
-      acpi_status="$(echo "$acpi" | awk '{ print $3 }')"
-      acpi_status="${acpi_status%,}"
+      acpi="$(acpi | awk '{print $3 $4}')"
+      batt="${acpi#*,}" ; batt="${batt%\%*}"
+      acpi_status="${acpi%%,*}"
       intcheck () {
           case ${1#[-+]} in
               ,*[!0-9]* | '') return 1 ;;
