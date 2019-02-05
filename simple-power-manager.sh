@@ -53,7 +53,7 @@ while true; do
         fi
     }
 
-    # if trigger has not already been fired, and if battery is state Charging or
+    # if trigger has not already been fired, and if battery state is Charging or
     # Full, then run user_custom_battery_normal_hook
     user_custom_battery_normal_hook() {
         # battery Charging / Full
