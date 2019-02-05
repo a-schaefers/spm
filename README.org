@@ -1,56 +1,13 @@
 * KISS power manager
 Weighing in at ~80 lines of shell script, simple-power-manager tries to be a KISS (keep-it-simple-stupid) power manager.
-By default it sends desktop notifications and adjusts brightness based on power threshholds, is easily programmable and
- can be copied and pasted directly in to .xinitrc.
+By default it sends desktop notifications, adjusts brightness based on power threshholds.
+
+* Install
+Launch the script, or just copy and paste directly to .xinitrc.
 
 * Easy customization
 
- Modify the user_custom functions accordingly in the comment block at the top of the script (shown below).
-
-#+BEGIN_SRC bash
-  ############################################################################
-      # battery polling frequency
-      sleep 5
-
-      # battery % threshholds that trigger events
-      BATT_THRESHHOLDS="99 80 40 20 10 5"
-
-      # if trigger has not already been fired, and if battery % is less than or equal
-      # to a threshhold and if battery state is Discharging, then run user_custom_low_battery_hook
-      user_custom_low_battery_hook() {
-          if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
-              # 80-99% battery
-              echo # do nothing
-          elif [ "$batt" -lt 81 ] && [ "$batt" -gt 40 ]; then
-              # 40-80% battery
-              echo # do nothing
-          elif [ "$batt" -lt 41 ] && [ "$batt" -gt 20 ]; then
-              # 20-40% battery
-              echo # do nothing
-          elif [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
-              # 10-20% battery
-              notify-send "Battery: ${batt}%"
-              xbacklight -set 20
-          elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
-              # 5-10% battery
-              notify-send "Battery: ${batt}%"
-              xbacklight -set 10
-          elif [ "$batt" -lt 6 ]; then
-              # 5% battery or less
-              notify-send "Battery: ${batt}%"
-              xbacklight -set 5
-          fi
-      }
-
-      # if trigger has not already been fired, and if battery state is Charging or
-      # Full, then run user_custom_battery_normal_hook
-      user_custom_battery_normal_hook() {
-          # battery Charging / Full
-          notify-send "Battery: $acpi_status ${batt}%"
-          xbacklight -set 100
-      }
-      ############################################################################
-#+END_SRC
+ Modify the user_custom functions accordingly in the comment block at the top of the script.
 
 * Dependencies:
 The "acpi" command is used to determine the current battery level
@@ -58,3 +15,92 @@ The "acpi" command is used to determine the current battery level
 The "notify-send" command (libnotify) is used to send desktop notifications
 
 The user_custom_batt_low() is configured for xbacklight/acpilight already-- users of lux, light or whatever will need to customize it.
+
+* Without further ado
+#+BEGIN_SRC bash
+while true; do
+    ############################################################################
+    # battery polling frequency
+    sleep 5
+
+    # if trigger has not already been fired, and if battery % is less than or equal
+    # to a threshhold and if battery state is Discharging, then run user_custom_low_battery_hook
+    user_custom_low_battery_hook() {
+        if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
+            # 80-99% battery
+            echo # do nothing
+
+        elif [ "$batt" -lt 81 ] && [ "$batt" -gt 40 ]; then
+            # 40-80% battery
+            echo # do nothing
+
+        elif [ "$batt" -lt 41 ] && [ "$batt" -gt 20 ]; then
+            # 20-40% battery
+            echo # do nothing
+
+        elif [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+            # 10-20% battery
+            notify-send "Battery: ${batt}%"
+            xbacklight -set 20
+
+        elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
+            # 5-10% battery
+            notify-send "Battery: ${batt}%"
+            xbacklight -set 10
+
+        elif [ "$batt" -lt 6 ]; then
+            # 5% battery or less
+            notify-send "Battery: ${batt}%"
+            xbacklight -set 5
+        fi
+    }
+
+    # if trigger has not already been fired, and if battery state is Charging or
+    # Full, then run user_custom_battery_normal_hook
+    user_custom_battery_normal_hook() {
+        # battery Charging / Full
+        notify-send "Battery: $acpi_status ${batt}%"
+        xbacklight -set 80
+    }
+    ############################################################################
+
+    bail() {
+        [ $# -gt 0 ] && printf -- "%s\n" "$*"
+        break
+    }
+    command -v acpi > /dev/null || bail "acpi not found"
+    if [ ! -d /tmp/battmon ];then mkdir /tmp/battmon || bail "/tmp is not writeable" ; fi
+    acpi="$(acpi)"
+    batt="$(echo "$acpi" | awk '{ print $4 }')"
+    batt="${batt%\%*}"
+    acpi_status="$(echo "$acpi" | awk '{ print $3 }')"
+    acpi_status="${acpi_status%,}"
+    intcheck () {
+        case ${1#[-+]} in
+            *[!0-9]* | '') return 1 ;;
+            * ) return 0 ;;
+        esac
+    }
+    intcheck "$batt" || bail "$batt is not an integer"
+    if [ "$acpi_status" = "Discharging" ];then
+        batt_threshholds="99 80 40 20 10 5"
+        echo "$batt_threshholds" | tr ' ' '\n' | while read -r thresh; do
+            if [ "$batt" -eq "$thresh" ] || [ "$batt" -lt "$thresh" ]; then
+                if [ ! -f "/tmp/battmon/$thresh" ]; then
+                    if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
+                    touch "/tmp/battmon/$thresh"
+                    user_custom_low_battery_hook
+                fi
+            fi
+        done
+    fi
+    if [ "$acpi_status" = "Charging" ] || [ "$acpi_status" = "Full" ]
+    then
+        if [ ! -f "/tmp/battmon/100" ];then
+            rm /tmp/battmon/*
+            user_custom_battery_normal_hook
+            touch /tmp/battmon/100
+        fi
+    fi
+done &
+#+END_SRC
