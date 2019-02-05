@@ -77,8 +77,10 @@ while true; do
         [ $# -gt 0 ] && printf -- "%s\n" "$*"
         break
     }
-    command -v acpi > /dev/null || bail "acpi not found"
-    if [ ! -d /tmp/battmon ];then mkdir /tmp/battmon || bail "/tmp is not writeable" ; fi
+    if [ ! -d /tmp/battmon ];then
+        command -v acpi > /dev/null || bail "acpi not found"
+        mkdir /tmp/battmon || bail "/tmp is not writeable"
+    fi
     acpi="$(acpi)"
     batt="$(echo "$acpi" | awk '{ print $4 }')"
     batt="${batt%\%*}"
