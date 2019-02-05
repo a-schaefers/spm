@@ -1,6 +1,6 @@
 * KISS power manager
 Weighing in at ~80 lines of shell script, simple-power-manager tries to be a KISS (keep-it-simple-stupid) power manager.
-By default it sends desktop notifications, adjusts brightness based on power threshholds.
+By default it sends desktop notifications and adjusts brightness based on power threshholds.
 
 * Install
 Launch the script, or just copy and paste directly to .xinitrc.
