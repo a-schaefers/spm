@@ -33,7 +33,7 @@ while true; do
     sleep 5
 
     # if trigger has not already been fired, and if battery % is less than or equal
-    # to a threshhold and if battery state is Discharging, then run user_custom_low_battery_hook
+    # to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
     user_custom_low_battery_hook() {
         if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
             # 80-99% battery
@@ -92,8 +92,8 @@ while true; do
     }
     intcheck "$batt" || bail "$batt is not an integer"
     if [ "$acpi_status" = "Discharging" ];then
-        batt_threshholds="99 80 40 20 10 5"
-        echo "$batt_threshholds" | tr ' ' '\n' | while read -r thresh; do
+        batt_thresholds="99 80 40 20 10 5"
+        echo "$batt_thresholds" | tr ' ' '\n' | while read -r thresh; do
             if [ "$batt" -eq "$thresh" ] || [ "$batt" -lt "$thresh" ]; then
                 if [ ! -f "/tmp/battmon/$thresh" ]; then
                     if [ -f "/tmp/battmon/100" ]; then rm /tmp/battmon/100; fi
