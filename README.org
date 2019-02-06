@@ -38,8 +38,6 @@ The usage listing from the -h --help command should be fairly self-explanatory
 # battery polling frequency
 sleep 5
 
-# if trigger has not already been fired, and if battery % is less than or equal
-# to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
 user_custom_low_battery_hook() {
     if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
         # 80-99% battery
@@ -70,8 +68,6 @@ user_custom_low_battery_hook() {
     fi
 }
 
-# if trigger has not already been fired, and if battery state is Charging or
-# Full, then run user_custom_battery_normal_hook
 user_custom_battery_normal_hook() {
     # battery Charging / Full
     notify-send "Battery: $acpi_status $batt"

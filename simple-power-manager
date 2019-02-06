@@ -76,7 +76,8 @@ daemon_start() {
         # get battery % and status
         acpi_info
 
-        # discharging loop
+        # if trigger has not already been fired, and if battery % is less than or equal
+        # to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
         if [ "$acpi_status" = "Discharging" ];then
             batt_thresholds="99 80 40 20 10 5"
             echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
@@ -90,7 +91,8 @@ daemon_start() {
             done
         fi
 
-        # charging / full loop
+        # if trigger has not already been fired, and if battery state is Charging or
+        # Full, then run user_custom_battery_normal_hook
         if [ "$acpi_status" = "Charging" ] || [ "$acpi_status" = "Full" ]
         then
             if [ ! -f "/tmp/simple-power-manager/state/100" ];then
@@ -114,8 +116,6 @@ make_defconfig() {
 # battery polling frequency
 sleep 5
 
-# if trigger has not already been fired, and if battery % is less than or equal
-# to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
 user_custom_low_battery_hook() {
     if [ "\$batt" -lt 100 ] && [ "\$batt" -gt 80 ]; then
         # 80-99% battery
@@ -146,8 +146,6 @@ user_custom_low_battery_hook() {
     fi
 }
 
-# if trigger has not already been fired, and if battery state is Charging or
-# Full, then run user_custom_battery_normal_hook
 user_custom_battery_normal_hook() {
     # battery Charging / Full
     notify-send "Battery: \$acpi_status \$batt"
