@@ -23,8 +23,8 @@ The usage listing from the -h --help command should be fairly self-explanatory
   -h, --help                 display this help menu
 #+END_SRC
 
-* Easy customization in $HOME/.config/simple-power-manager/config
- Modify it to do your bidding!
+* Easy customization
+ Modify $HOME/.config/simple-power-manager/config to do your bidding!
 #+BEGIN_SRC bash
 #################################################################################
 # simple-power-manager configuration - /bin/sh - it's shell script, be careful! #
