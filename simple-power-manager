@@ -40,7 +40,6 @@ Usage: simple-power-manager [OPTION...]
   --status                   display whether the state is running (awake) or paused (asleep)
   -h, --help                 display this help menu
 EOF
-    exit 0
 }
 
 acpi_info() {
@@ -166,7 +165,7 @@ daemon_restart() {
         echo "Cleaning /tmp/simple-power-manager"
         rm -rf /tmp/simple-power-manager
         echo "Restarting Daemon"
-        ~/repos/simple-power-manager/simple-power-manager -d
+        simple-power-manager -d
     }
     trap restart INT TERM
     killall simple-power-ma
