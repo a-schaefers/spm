@@ -5,16 +5,71 @@ By default it sends desktop notifications and adjusts brightness based on power 
 xfce-power-manager and mate-power-manager.
 
 * Install
-Launch the script, or just copy and paste directly to .xinitrc.
+Just put the simple-power-manager somewhere on your path. You'll need the "acpi" tool as well, its only dependency.
 
-* Easy customization
+* How to use
+The usage listing from the -h --help command should be fairly self-explanatory
 
- Modify the user_custom functions accordingly in the comment block at the top of the script.
+#+BEGIN_SRC txt
+ Usage: simple-power-manager [OPTION...]
 
-* Dependencies:
-The "acpi" command is used to determine the current battery level
+  -d, --daemon               start the daemon and fork the process
+  -D, --default              regenerates the default configuration file to $HOME/.config/simple-power-manager/config
+  --reload                   reload the configuration file
+  --restart                  wipe simple-power-manager temporary state (from /tmp) and restart the daemon
+  --sleep                    put the daemon in a sleep loop
+  --awake                    awake the daemon from a sleep loop
+  --status                   display whether the state is running (awake) or paused (asleep)
+  -h, --help                 display this help menu
+#+END_SRC
 
-The "notify-send" command (libnotify) is used to send desktop notifications
+* Easy customization in $HOME/.config/simple-power-manager/config
+ Modify it to do your bidding!
+#+BEGIN_SRC bash
+#################################################################################
+# simple-power-manager configuration - /bin/sh - it's shell script, be careful! #
+#################################################################################
 
-The user_custom functions are configured for xbacklight/acpilight already--
-users of lux, light or whatever will need to customize it.
+# battery polling frequency
+sleep 5
+
+# if trigger has not already been fired, and if battery % is less than or equal
+# to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
+user_custom_low_battery_hook() {
+    if [ "\$batt" -lt 100 ] && [ "\$batt" -gt 80 ]; then
+        # 80-99% battery
+        echo # do nothing
+
+     elif [ "\$batt" -lt 81 ] && [ "\$batt" -gt 40 ]; then
+        # 40-80% battery
+        echo # do nothing
+
+     elif [ "\$batt" -lt 41 ] && [ "\$batt" -gt 20 ]; then
+        # 20-40% battery
+        echo # do nothing
+
+     elif [ "\$batt" -lt 21 ] && [ "\$batt" -gt 10 ]; then
+        # 10-20% battery
+        notify-send "Battery: \$batt"
+        xbacklight -set 20
+
+     elif [ "\$batt" -lt 11 ] && [ "\$batt" -gt 5 ]; then
+        # 5-10% battery
+        notify-send "Battery: \$batt"
+        xbacklight -set 10
+
+     elif [ "\$batt" -lt 6 ]; then
+        # 5% battery or less
+        notify-send "Battery: \$batt"
+        xbacklight -set 5
+    fi
+}
+
+# if trigger has not already been fired, and if battery state is Charging or
+# Full, then run user_custom_battery_normal_hook
+user_custom_battery_normal_hook() {
+    # battery Charging / Full
+    notify-send "Battery: \$acpi_status \$batt"
+    xbacklight -set 80
+}
+#+END_SRC
