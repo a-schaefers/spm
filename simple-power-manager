@@ -111,4 +111,4 @@ while true; do
             touch /tmp/battmon/100
         fi
     fi
-done &
+done
