@@ -41,31 +41,31 @@ sleep 5
 # if trigger has not already been fired, and if battery % is less than or equal
 # to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
 user_custom_low_battery_hook() {
-    if [ "\$batt" -lt 100 ] && [ "\$batt" -gt 80 ]; then
+    if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
         # 80-99% battery
         echo # do nothing
 
-     elif [ "\$batt" -lt 81 ] && [ "\$batt" -gt 40 ]; then
+     elif [ "$batt" -lt 81 ] && [ "$batt" -gt 40 ]; then
         # 40-80% battery
         echo # do nothing
 
-     elif [ "\$batt" -lt 41 ] && [ "\$batt" -gt 20 ]; then
+     elif [ "$batt" -lt 41 ] && [ "$batt" -gt 20 ]; then
         # 20-40% battery
         echo # do nothing
 
-     elif [ "\$batt" -lt 21 ] && [ "\$batt" -gt 10 ]; then
+     elif [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
         # 10-20% battery
-        notify-send "Battery: \$batt"
+        notify-send "Battery: $batt"
         xbacklight -set 20
 
-     elif [ "\$batt" -lt 11 ] && [ "\$batt" -gt 5 ]; then
+     elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
         # 5-10% battery
-        notify-send "Battery: \$batt"
+        notify-send "Battery: $batt"
         xbacklight -set 10
 
-     elif [ "\$batt" -lt 6 ]; then
+     elif [ "$batt" -lt 6 ]; then
         # 5% battery or less
-        notify-send "Battery: \$batt"
+        notify-send "Battery: $batt"
         xbacklight -set 5
     fi
 }
@@ -74,7 +74,7 @@ user_custom_low_battery_hook() {
 # Full, then run user_custom_battery_normal_hook
 user_custom_battery_normal_hook() {
     # battery Charging / Full
-    notify-send "Battery: \$acpi_status \$batt"
+    notify-send "Battery: $acpi_status $batt"
     xbacklight -set 80
 }
 #+END_SRC
