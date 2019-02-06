@@ -76,7 +76,7 @@ daemon_start() {
         # get battery % and status
         acpi_info
 
-        # discharge loop
+        # discharging loop
         if [ "$acpi_status" = "Discharging" ];then
             batt_thresholds="99 80 40 20 10 5"
             echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
@@ -90,7 +90,7 @@ daemon_start() {
             done
         fi
 
-        # charge / full loop
+        # charging / full loop
         if [ "$acpi_status" = "Charging" ] || [ "$acpi_status" = "Full" ]
         then
             if [ ! -f "/tmp/simple-power-manager/state/100" ];then
