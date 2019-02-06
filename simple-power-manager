@@ -168,7 +168,7 @@ daemon_restart() {
         echo "Cleaning /tmp/simple-power-manager"
         rm -rf /tmp/simple-power-manager
         echo "Restarting Daemon"
-        FORCE=1 ~/repos/simple-power-manager/simple-power-manager -d
+        FORCE=1 simple-power-manager -d
     }
     trap restart TERM
     killall simple-power-ma
