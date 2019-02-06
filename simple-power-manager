@@ -49,6 +49,7 @@ acpi_info() {
 }
 
 daemon_start() {
+    number_of_instances ; if [ "$spmcount" -gt 2 ]; then die "Simple Power Manager is already running"; fi
     while true; do
         # if daemon is locked, enter a sleep loop
         until [ ! -f /tmp/simple-power-manager/state/lock ]; do sleep 1; done
@@ -186,26 +187,16 @@ daemon_awake() {
         echo "Simple Power Manager daemon is running."
 }
 
+number_of_instances() { spmcount="$(pgrep simple-power-ma | wc -l)"; }
+
 daemon_status() {
-    acpi_info ; echo "Battery: $acpi_status $batt"
-
-    spmcount="$(pgrep simple-power-ma | wc -l)"
-
-    if [ "$spmcount" -gt 3 ]; then
-        pgrep -a simple-power-ma
-        die "WARNING: There is more than one instance of simple-power-manager running! (Try 'simple-power-manager --restart')"
-    elif [ "$spmcount" -lt 3 ]; then
+    number_of_instances ; acpi_info ; echo "Battery: $acpi_status $batt"
+    if [ "$spmcount" -lt 3 ]; then
         die "Simple Power Manager is not running."
-    fi
-
-    if [ ! -f /tmp/simple-power-manager/state/lock ]; then
-        if [ "$spmcount" -eq 3 ]; then
-            echo "Simple Power Manager daemon is running."
-        fi
+    elif [ ! -f /tmp/simple-power-manager/state/lock ]; then
+        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is running."; fi
     else
-        if [ "$spmcount" -eq 3 ]; then
-            echo "Simple Power Manager daemon is sleeping."
-        fi
+        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is sleeping."; fi
     fi
 }
 
