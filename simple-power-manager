@@ -76,10 +76,12 @@ daemon_start() {
         # get battery % and status
         acpi_info
 
+        # set thresholds "array"
+        batt_thresholds="99 80 40 20 10 5"
+
         # if trigger has not already been fired, and if battery % is less than or equal
         # to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
         if [ "$acpi_status" = "Discharging" ];then
-            batt_thresholds="99 80 40 20 10 5"
             echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
                 if [ "$batt" -eq "$state" ] || [ "$batt" -lt "$state" ]; then
                     if [ ! -f "/tmp/simple-power-manager/state/$state" ]; then
