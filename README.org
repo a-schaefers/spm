@@ -1,20 +1,19 @@
-* KISS simple-power-manager
-Weighing in at ~80 lines of shell script, simple-power-manager tries to be a KISS (keep-it-simple-stupid) power manager.
-By default it sends desktop notifications and adjusts brightness based on power thresholds. Simple-power-manager
- can be thought of as a lightweight replacement for similar applications such as
+* KISS simple-power-manager...
+simple-power-manager sends desktop notifications and adjusts brightness based on power thresholds
+and can be thought of as a lightweight alternative to similar applications such as
 xfce-power-manager and mate-power-manager.
 
 * Install
-Just put the simple-power-manager somewhere on your path. You'll need the "acpi" tool as well, its only dependency.
+just put the simple-power-manager somewhere on your path. You'll need the "acpi" tool as well, its only dependency.
 
 * Autostart
-It can be autostarted with .xinitrc or your preferred method.
+it can be autostarted with .xinitrc or your preferred method.
 #+BEGIN_SRC bash
 simple-power-manager --daemon
 #+END_SRC
 
 * Usage
-The usage listing from the -h --help command should be fairly self-explanatory
+the usage listing from the -h --help command should be fairly self-explanatory
 #+BEGIN_SRC txt
  Usage: simple-power-manager [OPTION...]
 
@@ -29,7 +28,7 @@ The usage listing from the -h --help command should be fairly self-explanatory
 #+END_SRC
 
 * Easy customization
- Modify $HOME/.config/simple-power-manager/config to do your bidding!
+ modify $HOME/.config/simple-power-manager/config to do your bidding!
 #+BEGIN_SRC bash
 #################################################################################
 # simple-power-manager configuration - /bin/sh - it's shell script, be careful! #
