@@ -7,9 +7,14 @@ xfce-power-manager and mate-power-manager.
 * Install
 Just put the simple-power-manager somewhere on your path. You'll need the "acpi" tool as well, its only dependency.
 
-* How to use
-The usage listing from the -h --help command should be fairly self-explanatory
+* Autostart
+It can be autostarted with .xinitrc or your preferred method.
+#+BEGIN_SRC bash
+simple-power-manager --daemon
+#+END_SRC
 
+* Usage
+The usage listing from the -h --help command should be fairly self-explanatory
 #+BEGIN_SRC txt
  Usage: simple-power-manager [OPTION...]
 
