@@ -49,7 +49,9 @@ acpi_info() {
 }
 
 daemon_start() {
-    number_of_instances ; if [ "$spmcount" -gt 2 ]; then die "Simple Power Manager is already running"; fi
+    if [ -z "$FORCE" ]; then
+        number_of_instances ; if [ "$spmcount" -gt 2 ]; then die "Simple Power Manager is already running"; fi
+    fi
     while true; do
         # if daemon is locked, enter a sleep loop
         until [ ! -f /tmp/simple-power-manager/state/lock ]; do sleep 1; done
@@ -166,9 +168,9 @@ daemon_restart() {
         echo "Cleaning /tmp/simple-power-manager"
         rm -rf /tmp/simple-power-manager
         echo "Restarting Daemon"
-        simple-power-manager -d
+        FORCE=1 ~/repos/simple-power-manager/simple-power-manager -d
     }
-    trap restart INT TERM
+    trap restart TERM
     killall simple-power-ma
 }
 
@@ -200,8 +202,8 @@ daemon_status() {
     fi
 }
 
-[ $# -lt 1 ] && help && return 1
-[ $# -gt 1 ] && help && return 1
+[ $# -lt 1 ] && help && exit 1
+[ $# -gt 1 ] && help && exit 1
 case $1 in
     -d        ) daemon_start ;;
     --daemon  ) daemon_start ;;
@@ -214,5 +216,5 @@ case $1 in
     --restart ) daemon_restart ;;
     -h        ) help ;;
     --help    ) help ;;
-    *         ) help; return 1 ;;
+    *         ) help; exit 1 ;;
 esac
