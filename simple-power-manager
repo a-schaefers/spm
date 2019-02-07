@@ -45,12 +45,12 @@ help() {
 Usage: simple-power-manager [OPTION...]
 
   -d, --daemon               start the daemon and fork the process
-  -D, --default              regenerates the default configuration file to $HOME/.config/simple-power-manager/config
+  -D, --default              regenerate the default configuration file
   --reload                   reload the configuration file
-  --restart                  wipe simple-power-manager temporary state (from /tmp) and restart the daemon
-  --sleep                    put the daemon in a sleep loop
-  --awake                    awake the daemon from a sleep loop
-  --status                   display whether the state is running (awake) or paused (asleep)
+  --restart                  restart the daemon
+  --enable                   put the daemon in a sleep loop
+  --disable                  awake the daemon from a sleep loop
+  --status                   display whether the daemon is enabled or disabled
   --about                    display more information about this program
   -h, --help                 display this help menu
 EOF
@@ -205,12 +205,12 @@ daemon_reload() {
         echo "User configuration loaded."
 }
 
-daemon_sleep() {
+daemon_disable() {
     touch /tmp/simple-power-manager/state/lock && \
         echo "Simple Power Manager daemon is sleeping."
 }
 
-daemon_awake() {
+daemon_enable() {
     rm /tmp/simple-power-manager/state/lock && \
         echo "Simple Power Manager daemon is running."
 }
@@ -241,8 +241,8 @@ case $1 in
     -D        ) make_defconfig ;;
     --default ) make_defconfig ;;
     --reload  ) daemon_reload ;;
-    --sleep   ) daemon_sleep ;;
-    --awake   ) daemon_awake ;;
+    --disable ) daemon_disable ;;
+    --enable  ) daemon_enable ;;
     --status  ) daemon_status ;;
     --restart ) daemon_restart ;;
     --about   ) about ;;
