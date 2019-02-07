@@ -1,7 +1,7 @@
 # Maintainer: Adam Schaefers <sch@efers.org>
 
 pkgname=simple-power-manager
-pkgver=1.2.5
+pkgver=1.2.6
 pkgrel=1
 pkgdesc='Programmable shell script daemon that performs actions based on power thresholds'
 arch=('any')
@@ -12,7 +12,7 @@ conflicts=('')
 makedepends=('')
 depends=('acpi')
 source=("https://github.com/a-schaefers/simple-power-manager/archive/v${pkgver}.tar.gz")
-sha256sums=('faf00128fb4019e58f170ef3a6fc8df2470e37a4d3522685c2a59437ef72a48d')
+sha256sums=('c1d03d65aaf020cb535f29c9764d9ca4c0547e425a621abeec0ec24191afbb6f')
 
 package() {
   cd ${srcdir}/${pkgname}-${pkgver}
