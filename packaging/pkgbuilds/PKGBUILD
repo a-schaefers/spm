@@ -1,0 +1,23 @@
+# Maintainer: Adam Schaefers <sch@efers.org>
+
+pkgname=simple-power-manager
+pkgver=1.2.5
+pkgrel=1
+pkgdesc='Programmable shell script daemon that performs actions based on power thresholds'
+arch=('any')
+url="https://github.com/a-schaefers/{pkgname}.git"
+license=('MIT')
+provides=("${pkgname}")
+conflicts=('')
+makedepends=('')
+depends=('acpi')
+source=("https://github.com/a-schaefers/simple-power-manager/archive/v${pkgver}.tar.gz")
+sha256sums=('faf00128fb4019e58f170ef3a6fc8df2470e37a4d3522685c2a59437ef72a48d')
+
+package() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+
+  install -d "${pkgdir}/usr/share/license/${pkgname}"
+  install -m 755 "LICENSE" "${pkgdir}/usr/share/license/${pkgname}/LICENSE"
+}
