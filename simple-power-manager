@@ -56,13 +56,6 @@ Usage: simple-power-manager [OPTION...]
 EOF
 }
 
-# the only hard dependency, "sys-power/acpi"
-acpi_info() {
-    acpi="$(acpi | awk '{print $3 $4}')"
-    batt="${acpi#*,}" ; batt="${batt%\%*}"
-    acpi_status="${acpi%%,*}"
-}
-
 daemon_start() {
     if [ -z "$FORCE" ]; then
         number_of_instances ; if [ "$spmcount" -gt 2 ]; then die "Simple Power Manager is already running"; fi
@@ -228,6 +221,12 @@ daemon_status() {
 }
 
 number_of_instances() { spmcount="$(pgrep simple-power-ma | wc -l)"; }
+
+acpi_info() {
+    acpi="$(acpi | awk '{print $3 $4}')"
+    batt="${acpi#*,}" ; batt="${batt%\%*}"
+    acpi_status="${acpi%%,*}"
+}
 
 die() {
     [ $# -gt 0 ] && printf -- "%s\n" "(SPM) $(tput setaf 1)$*"
