@@ -182,8 +182,8 @@ user_custom_battery_normal_hook() {
     backlight_high
 }
 EOF
-        echo "Configuration script written to $HOME/.config/simple-power-manager/config"
-        echo "Please modify it accordingly before running simple-power-manager again."
+        echo "(SPM) Configuration script written to $HOME/.config/simple-power-manager/config"
+        echo "(SPM) Please modify it accordingly before running simple-power-manager again."
     else
         die "Configuration script already exists in $HOME/.config/simple-power-manager/config"
     fi
@@ -192,9 +192,9 @@ EOF
 daemon_restart() {
     restart() {
         rm -rf /tmp/simple-power-manager && \
-            echo "Cleaning /tmp/simple-power-manager"
+            echo "(SPM) Cleaning /tmp/simple-power-manager"
         FORCE=1 simple-power-manager -d && \
-            echo "Restarting Daemon"
+            echo "(SPM) Restarting Daemon"
     }
     trap restart TERM
     killall simple-power-ma
@@ -202,35 +202,35 @@ daemon_restart() {
 
 daemon_reload() {
     cp "$HOME/.config/simple-power-manager/config" /tmp/simple-power-manager/config && \
-        echo "User configuration loaded."
+        echo "(SPM) $HOME/.config/simple-power-manager/config reloaded."
 }
 
 daemon_disable() {
     touch /tmp/simple-power-manager/state/lock && \
-        echo "Simple Power Manager daemon is disabled."
+        echo "(SPM) Simple Power Manager daemon is disabled."
 }
 
 daemon_enable() {
     rm /tmp/simple-power-manager/state/lock && \
-        echo "Simple Power Manager daemon is enabled."
+        echo "(SPM) Simple Power Manager daemon is enabled."
 }
 
 daemon_status() {
-    acpi_info ; echo "Battery: $acpi_status $batt"
+    acpi_info ; echo "(SPM) Battery: $acpi_status ${batt}%"
     number_of_instances
     if [ "$spmcount" -lt 3 ]; then
         die "Simple Power Manager daemon is not running. Try \"simple-power-manager --daemon\""
     elif [ ! -f /tmp/simple-power-manager/state/lock ]; then
-        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is running and enabled."; fi
+        if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and enabled."; fi
     else
-        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is running and disabled."; fi
+        if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and disabled."; fi
     fi
 }
 
 number_of_instances() { spmcount="$(pgrep simple-power-ma | wc -l)"; }
 
 die() {
-    [ $# -gt 0 ] && printf -- "%s\n" "$(tput setaf 1)$*"
+    [ $# -gt 0 ] && printf -- "%s\n" "(SPM) $(tput setaf 1)$*"
     exit 1
 }
 
