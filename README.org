@@ -41,10 +41,10 @@ notifycmd() { notify-send "Battery: $acpi_status $batt"; }
 
 # example backlight commands
 backlightcmd="xbacklight -set"
-backlight_high() { $backlightcmd 80; }
-backlight_medium() { $backlightcmd 40; }
+backlight_high() { $backlightcmd 100; }
+backlight_medium() { $backlightcmd 80; }
 backlight_low() { $backlightcmd 20; }
-backlight_crit() { $backlightcmd 5; }
+backlight_crit() { $backlightcmd 10; }
 
 # battery polling frequency
 sleep 5
@@ -52,15 +52,15 @@ sleep 5
 user_custom_low_battery_hook() {
     if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
         # 80-99% battery
-        echo # leave this here if section is empty
+        backlight_high
 
      elif [ "$batt" -lt 81 ] && [ "$batt" -gt 40 ]; then
         # 40-80% battery
-        echo # leave this here if section is empty
+        backlight_high
 
      elif [ "$batt" -lt 41 ] && [ "$batt" -gt 20 ]; then
         # 20-40% battery
-        echo # leave this here if section is empty
+        backlight_medium
 
      elif [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
         # 10-20% battery
