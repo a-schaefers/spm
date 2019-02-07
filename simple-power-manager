@@ -165,10 +165,10 @@ EOF
 
 daemon_restart() {
     restart() {
-        echo "Cleaning /tmp/simple-power-manager"
-        rm -rf /tmp/simple-power-manager
-        echo "Restarting Daemon"
-        FORCE=1 simple-power-manager -d
+        rm -rf /tmp/simple-power-manager && \
+            echo "Cleaning /tmp/simple-power-manager"
+        FORCE=1 simple-power-manager -d && \
+            echo "Restarting Daemon"
     }
     trap restart TERM
     killall simple-power-ma
