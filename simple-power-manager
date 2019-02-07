@@ -22,6 +22,24 @@
 #    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #    SOFTWARE.
 
+about() {
+    cat << EOF
+Project Home:
+
+    https://github.com/a-schaefers/simple-power-manager
+
+About simple-power-manager:
+
+    Simple Power Manager is a programmable shell script daemon that performs
+    actions based on power thresholds. By default simple-power-manager is
+    pre-configured to send desktop notifications using notify-send and adjust
+    brightness levels using xbacklight. Being "programmable," edit
+    ~/.config/simple-power-manager/config to make it do almost anything.
+    Simple Power Manager can be thought of as a lightweight alternative to
+    similar applications such as xfce-power-manager and mate-power-manager.
+EOF
+}
+
 help() {
     cat << EOF
 Usage: simple-power-manager [OPTION...]
@@ -33,6 +51,7 @@ Usage: simple-power-manager [OPTION...]
   --sleep                    put the daemon in a sleep loop
   --awake                    awake the daemon from a sleep loop
   --status                   display whether the state is running (awake) or paused (asleep)
+  --about                    display more information about this program
   -h, --help                 display this help menu
 EOF
 }
@@ -214,6 +233,7 @@ case $1 in
     --awake   ) daemon_awake ;;
     --status  ) daemon_status ;;
     --restart ) daemon_restart ;;
+    --about   ) about ;;
     -h        ) help ;;
     --help    ) help ;;
     *         ) help; exit 1 ;;
