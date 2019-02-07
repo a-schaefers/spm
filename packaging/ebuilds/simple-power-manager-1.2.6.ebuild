@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DESCRIPTION="A lightweight shell script that sends desktop notifications and adjusts brightness based on power thresholds."
+DESCRIPTION="Simple Power Manager is a programmable shell script daemon that performs actions based on power thresholds."
 HOMEPAGE="https://github.com/a-schaefers/simple-power-manager/"
 SRC_URI="https://github.com/a-schaefers/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
