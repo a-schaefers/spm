@@ -1,7 +1,9 @@
 * KISS simple-power-manager...
-simple-power-manager sends desktop notifications and adjusts brightness based on power thresholds
-and can be thought of as a lightweight alternative to similar applications such as
-xfce-power-manager and mate-power-manager.
+Simple Power Manager is a programmable shell script daemon that performs actions based on power thresholds.
+By default simple-power-manager is pre-configured to send desktop notifications using notify-send
+and adjust brightness levels using xbacklight. Being "programmable", edit ~/.config/simple-power-manager/config
+and to make it do almost anything. Simple Power Manager can be thought of as a lightweight alternative
+to similar applications such as xfce-power-manager and mate-power-manager.
 
 * Install
 just put the simple-power-manager somewhere on your path. You'll need the "acpi" tool as well, its only dependency.
