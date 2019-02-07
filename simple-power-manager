@@ -45,7 +45,7 @@ help() {
 Usage: simple-power-manager [OPTION...]
 
   -d, --daemon               start the daemon and fork the process
-  -D, --default              regenerate the default configuration file
+  -D, --default-config       regenerate the default configuration file
   --reload                   reload the configuration file
   --restart                  restart the daemon
   --enable                   put the daemon in a sleep loop
@@ -236,17 +236,17 @@ die() {
 
 [ ! $# -eq 1 ] && help && exit 1
 case $1 in
-    -d        ) daemon_start ;;
-    --daemon  ) daemon_start ;;
-    -D        ) make_defconfig ;;
-    --default ) make_defconfig ;;
-    --reload  ) daemon_reload ;;
-    --disable ) daemon_disable ;;
-    --enable  ) daemon_enable ;;
-    --status  ) daemon_status ;;
-    --restart ) daemon_restart ;;
-    --about   ) about ;;
-    -h        ) help ;;
-    --help    ) help ;;
-    *         ) help; exit 1 ;;
+    -d               ) daemon_start ;;
+    --daemon         ) daemon_start ;;
+    -D               ) make_defconfig ;;
+    --default-config ) make_defconfig ;;
+    --reload         ) daemon_reload ;;
+    --disable        ) daemon_disable ;;
+    --enable         ) daemon_enable ;;
+    --status         ) daemon_status ;;
+    --restart        ) daemon_restart ;;
+    --about          ) about ;;
+    -h               ) help ;;
+    --help           ) help ;;
+    *                ) help; exit 1 ;;
 esac
