@@ -207,23 +207,23 @@ daemon_reload() {
 
 daemon_disable() {
     touch /tmp/simple-power-manager/state/lock && \
-        echo "Simple Power Manager daemon is sleeping."
+        echo "Simple Power Manager daemon is disabled."
 }
 
 daemon_enable() {
     rm /tmp/simple-power-manager/state/lock && \
-        echo "Simple Power Manager daemon is running."
+        echo "Simple Power Manager daemon is enabled."
 }
 
 daemon_status() {
     acpi_info ; echo "Battery: $acpi_status $batt"
     number_of_instances
     if [ "$spmcount" -lt 3 ]; then
-        die "Simple Power Manager is not running."
+        die "Simple Power Manager daemon is not running. Try \"simple-power-manager --daemon\""
     elif [ ! -f /tmp/simple-power-manager/state/lock ]; then
-        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is running."; fi
+        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is running and enabled."; fi
     else
-        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is sleeping."; fi
+        if [ "$spmcount" -eq 3 ]; then echo "Simple Power Manager daemon is running and disabled."; fi
     fi
 }
 
