@@ -1,8 +1,8 @@
 * KISS simple-power-manager...
 Simple Power Manager is a programmable shell script daemon that performs actions based on power thresholds.
 By default simple-power-manager is pre-configured to send desktop notifications using notify-send
-and adjust brightness levels using xbacklight. Being "programmable", edit ~/.config/simple-power-manager/config
-and to make it do almost anything. Simple Power Manager can be thought of as a lightweight alternative
+and adjust brightness levels using xbacklight. Being "programmable," edit ~/.config/simple-power-manager/config
+to make it do almost anything. Simple Power Manager can be thought of as a lightweight alternative
 to similar applications such as xfce-power-manager and mate-power-manager.
 
 * Install
