@@ -4,7 +4,7 @@
 EAPI=7
 
 DESCRIPTION="A programmable shell script daemon that performs actions based on power thresholds."
-HOMEPAGE="https://github.com/a-schaefers/simple-power-manager/"
+HOMEPAGE="https://github.com/a-schaefers/simple-power-manager"
 SRC_URI="https://github.com/a-schaefers/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
