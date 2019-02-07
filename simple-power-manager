@@ -48,8 +48,8 @@ Usage: simple-power-manager [OPTION...]
   -D, --default-config       regenerate the default configuration file
   --reload                   reload the configuration file
   --restart                  restart the daemon
-  --enable                   put the daemon in a sleep loop
-  --disable                  awake the daemon from a sleep loop
+  --enable                   awake the daemon from a sleep loop
+  --disable                  put the daemon in a sleep loop
   --status                   display whether the daemon is enabled or disabled
   --about                    display more information about this program
   -h, --help                 display this help menu
