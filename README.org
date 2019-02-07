@@ -40,10 +40,11 @@ the usage listing from the -h --help command should be fairly self-explanatory
 notifycmd() { notify-send "Battery: $acpi_status $batt"; }
 
 # example backlight commands
-backlight_high() { xbacklight -set 80; }
-backlight_medium() { xbacklight -set 40; }
-backlight_low() { xbacklight -set 10; }
-backlight_crit() { xbacklight -set 5; }
+backlightcmd="xbacklight -set"
+backlight_high() { $backlightcmd 80; }
+backlight_medium() { $backlightcmd 40; }
+backlight_low() { $backlightcmd 20; }
+backlight_crit() { $backlightcmd 5; }
 
 # battery polling frequency
 sleep 5
