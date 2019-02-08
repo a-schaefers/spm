@@ -17,14 +17,15 @@ simple-power-manager --daemon
 * Usage
 the usage listing from the -h --help command should be fairly self-explanatory
 #+BEGIN_SRC txt
- Usage: simple-power-manager [OPTION...]
+Usage: simple-power-manager [OPTION...]
 
   -d, --daemon               start the daemon and fork the process
-  -D, --default              regenerates the default configuration file to $HOME/.config/simple-power-manager/config
-  --restart                  wipe simple-power-manager temporary state (from /tmp) and restart the daemon
-  --sleep                    put the daemon in a sleep loop
-  --awake                    awake the daemon from a sleep loop
-  --status                   display whether the state is running (awake) or paused (asleep)
+  -D, --default-config       regenerate the default configuration file
+  --restart                  restart the daemon
+  --enable                   awake the daemon from a sleep loop
+  --disable                  put the daemon in a sleep loop
+  --status                   display whether the daemon is enabled or disabled
+  --about                    display more information about this program
   -h, --help                 display this help menu
 #+END_SRC
 
