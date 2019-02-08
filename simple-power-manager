@@ -136,7 +136,7 @@ backlight_low() { \$backlightcmd 20; }
 backlight_crit() { \$backlightcmd 10; }
 
 # battery polling frequency
-sleep 1
+sleep 5
 
 user_custom_low_battery_hook() {
     if [ "\$batt" -lt 100 ] && [ "\$batt" -gt 80 ]; then
