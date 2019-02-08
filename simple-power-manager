@@ -72,8 +72,8 @@ daemon_start() {
     [ ! -f "$HOME/.config/simple-power-manager/config" ] &&  make_defconfig
 
     while true; do
-        # if daemon is locked, enter a sleep loop
-        until [ ! -f "$HOME/.config/simple-power-manager/state/lock" ]; do sleep 1; done
+        # if daemon is disabled, enter a sleep loop
+        until [ ! -f "$HOME/.config/simple-power-manager/state/sleep" ]; do sleep 1; done
 
         # sourcing of the user config file happens now
         if [ -f "$HOME/.config/simple-power-manager/config" ];then
@@ -193,12 +193,12 @@ daemon_restart() {
 }
 
 daemon_disable() {
-    touch "$HOME/.config/simple-power-manager/state/lock" && \
+    touch "$HOME/.config/simple-power-manager/state/sleep" && \
         echo "(SPM) Simple Power Manager daemon is disabled."
 }
 
 daemon_enable() {
-    rm "$HOME/.config/simple-power-manager/state/lock" && \
+    rm "$HOME/.config/simple-power-manager/state/sleep" && \
         echo "(SPM) Simple Power Manager daemon is enabled."
 }
 
@@ -207,7 +207,7 @@ daemon_status() {
     number_of_instances
     if [ "$spmcount" -lt 3 ]; then
         die "Simple Power Manager daemon is not running. Try \"simple-power-manager --daemon\""
-    elif [ ! -f "$HOME/.config/simple-power-manager/state/lock" ]; then
+    elif [ ! -f "$HOME/.config/simple-power-manager/state/sleep" ]; then
         if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and enabled."; fi
     else
         if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and disabled."; fi
