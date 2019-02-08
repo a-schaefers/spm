@@ -21,7 +21,6 @@ the usage listing from the -h --help command should be fairly self-explanatory
 
   -d, --daemon               start the daemon and fork the process
   -D, --default              regenerates the default configuration file to $HOME/.config/simple-power-manager/config
-  --reload                   reload the configuration file
   --restart                  wipe simple-power-manager temporary state (from /tmp) and restart the daemon
   --sleep                    put the daemon in a sleep loop
   --awake                    awake the daemon from a sleep loop
