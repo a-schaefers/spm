@@ -1,3 +1,9 @@
+* BETA SOFTWARE / Security advisory
+Currently the user config is sourced from /tmp and state is stored there, too.
+This is not great from a security standpoint.
+I like this tool and am learning a lot while I make it. I want to fix it and make it pro.
+But it's not ready for prime-time yet. Aloha
+
 * KISS simple-power-manager...
 Simple Power Manager is a programmable shell script daemon that performs actions based on power thresholds.
 By default simple-power-manager is pre-configured to send desktop notifications using notify-send
