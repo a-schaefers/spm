@@ -46,7 +46,6 @@ Usage: simple-power-manager [OPTION...]
 
   -d, --daemon               start the daemon and fork the process
   -D, --default-config       regenerate the default configuration file
-  --reload                   reload the configuration file
   --restart                  restart the daemon
   --enable                   awake the daemon from a sleep loop
   --disable                  put the daemon in a sleep loop
@@ -57,46 +56,45 @@ EOF
 }
 
 daemon_start() {
+    # set thresholds "array"
+    batt_thresholds="99 80 40 20 10 5"
+
     if [ -z "$FORCE" ]; then
         number_of_instances ; if [ "$spmcount" -gt 2 ]; then die "Simple Power Manager is already running"; fi
     fi
+
+    # one-time setup
+    # verify acpi is available and create dir structure in $HOME/.config
+    command -v acpi > /dev/null || die "acpi not found"
+
+    # create default user config structure
+    [ ! -d "$HOME/.config/simple-power-manager/state" ] && mkdir -p "$HOME/.config/simple-power-manager/state"
+    [ ! -f "$HOME/.config/simple-power-manager/config" ] &&  make_defconfig
+
     while true; do
         # if daemon is locked, enter a sleep loop
-        until [ ! -f /tmp/simple-power-manager/state/lock ]; do sleep 1; done
-
-        # one-time setup
-        if [ ! -d /tmp/simple-power-manager ];then
-            # verify acpi is available and create dir structure in /tmp
-            command -v acpi > /dev/null || die "acpi not found"
-            mkdir -p /tmp/simple-power-manager/state || die "/tmp is not writeable"
-
-            # create default user local dir structure
-            [ ! -d "$HOME/.config/simple-power-manager" ] && mkdir -p "$HOME/.config/simple-power-manager"
-            [ ! -f "$HOME/.config/simple-power-manager/config" ] &&  make_defconfig
-        fi
+        until [ ! -f "$HOME/.config/simple-power-manager/state/lock" ]; do sleep 1; done
 
         # sourcing of the user config file happens now
-        if [ -f "/tmp/simple-power-manager/config" ];then
-            . "/tmp/simple-power-manager/config"
+        if [ -f "$HOME/.config/simple-power-manager/config" ];then
+            . "$HOME/.config/simple-power-manager/config"
         else
-            daemon_reload
-            . "/tmp/simple-power-manager/config"
+            make_defconfig
+            . "$HOME/.config/simple-power-manager/config"
         fi
 
         # get battery % and status
         acpi_info
-
-        # set thresholds "array"
-        batt_thresholds="99 80 40 20 10 5"
 
         # if trigger has not already been fired, and if battery % is less than or equal
         # to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
         if [ "$acpi_status" = "Discharging" ];then
             echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
                 if [ "$batt" -eq "$state" ] || [ "$batt" -lt "$state" ]; then
-                    if [ ! -f "/tmp/simple-power-manager/state/$state" ]; then
-                        if [ -f "/tmp/simple-power-manager/state/100" ]; then rm /tmp/simple-power-manager/state/100; fi
-                        touch "/tmp/simple-power-manager/state/$state"
+                    if [ ! -f "$HOME/.config/simple-power-manager/state/$state" ]; then
+                        [ -f "$HOME/.config/simple-power-manager/state/100" ] && \
+                            rm "$HOME/.config/simple-power-manager/state/100"
+                        touch "$HOME/.config/simple-power-manager/state/$state"
                         user_custom_low_battery_hook
                     fi
                 fi
@@ -107,11 +105,12 @@ daemon_start() {
         # Full, then run user_custom_battery_normal_hook
         if [ "$acpi_status" = "Charging" ] || [ "$acpi_status" = "Full" ]
         then
-            if [ ! -f "/tmp/simple-power-manager/state/100" ];then
+            if [ ! -f "$HOME/.config/simple-power-manager/state/100" ];then
                 echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
-                    [ -f "/tmp/simple-power-manager/state/$state" ]&&  rm "/tmp/simple-power-manager/state/$state"
+                    [ -f "$HOME/.config/simple-power-manager/state/$state" ] &&  \
+                        rm "$HOME/.config/simple-power-manager/state/$state"
                 done
-                touch /tmp/simple-power-manager/state/100
+                touch "$HOME/.config/simple-power-manager/state/100"
                 user_custom_battery_normal_hook
             fi
         fi
@@ -137,7 +136,7 @@ backlight_low() { \$backlightcmd 20; }
 backlight_crit() { \$backlightcmd 10; }
 
 # battery polling frequency
-sleep 5
+sleep 1
 
 user_custom_low_battery_hook() {
     if [ "\$batt" -lt 100 ] && [ "\$batt" -gt 80 ]; then
@@ -184,8 +183,8 @@ EOF
 
 daemon_restart() {
     restart() {
-        rm -rf /tmp/simple-power-manager && \
-            echo "(SPM) Cleaning /tmp/simple-power-manager"
+        rm "$HOME/.config/simple-power-manager/state"/* && \
+            echo "(SPM) Cleaning $HOME/.config/simple-power-manager/state"
         FORCE=1 simple-power-manager -d && \
             echo "(SPM) Restarting Daemon"
     }
@@ -193,18 +192,13 @@ daemon_restart() {
     killall simple-power-ma
 }
 
-daemon_reload() {
-    cp "$HOME/.config/simple-power-manager/config" /tmp/simple-power-manager/config && \
-        echo "(SPM) $HOME/.config/simple-power-manager/config loaded."
-}
-
 daemon_disable() {
-    touch /tmp/simple-power-manager/state/lock && \
+    touch "$HOME/.config/simple-power-manager/state/lock" && \
         echo "(SPM) Simple Power Manager daemon is disabled."
 }
 
 daemon_enable() {
-    rm /tmp/simple-power-manager/state/lock && \
+    rm "$HOME/.config/simple-power-manager/state/lock" && \
         echo "(SPM) Simple Power Manager daemon is enabled."
 }
 
@@ -213,14 +207,14 @@ daemon_status() {
     number_of_instances
     if [ "$spmcount" -lt 3 ]; then
         die "Simple Power Manager daemon is not running. Try \"simple-power-manager --daemon\""
-    elif [ ! -f /tmp/simple-power-manager/state/lock ]; then
+    elif [ ! -f "$HOME/.config/simple-power-manager/state/lock" ]; then
         if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and enabled."; fi
     else
         if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and disabled."; fi
     fi
 }
 
-number_of_instances() { spmcount="$(pgrep simple-power-ma | wc -l)"; }
+number_of_instances() { spmcount="$(pgrep -u "$USER" simple-power-ma | wc -l)"; }
 
 acpi_info() {
     acpi="$(acpi | awk '{print $3 $4}')"
@@ -239,7 +233,6 @@ case $1 in
     --daemon         ) daemon_start ;;
     -D               ) make_defconfig ;;
     --default-config ) make_defconfig ;;
-    --reload         ) daemon_reload ;;
     --disable        ) daemon_disable ;;
     --enable         ) daemon_enable ;;
     --status         ) daemon_status ;;
