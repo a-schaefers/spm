@@ -92,7 +92,7 @@ daemon_start() {
             echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
                 if [ "$batt" -eq "$state" ] || [ "$batt" -lt "$state" ]; then
                     if [ ! -f "$HOME/.config/simple-power-manager/state/$state" ]; then
-                        rm -f "$HOME/.config/simple-power-manager/state"/*
+                        rm -f "$HOME/.config/simple-power-manager/state/100"
                         touch "$HOME/.config/simple-power-manager/state/$state"
                         user_custom_low_battery_hook
                     fi
@@ -194,7 +194,7 @@ daemon_disable() {
 }
 
 daemon_enable() {
-    rm "$HOME/.config/simple-power-manager/state/sleep" && \
+    rm -f "$HOME/.config/simple-power-manager/state/sleep" && \
         echo "(SPM) Simple Power Manager daemon is enabled."
 }
 
