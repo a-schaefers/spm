@@ -216,6 +216,23 @@ acpi_info() {
     acpi="$(acpi | awk '{print $3 $4}')"
     batt="${acpi#*,}" ; batt="${batt%\%*}"
     acpi_status="${acpi%%,*}"
+
+    # ensure batt is an integer
+    intcheck () {
+        case ${1#[-+]} in
+            *[!0-9]* | '') return 1 ;;
+            * ) return 0 ;;
+        esac
+    }
+    intcheck "$batt" || die "$batt is not an integer"
+
+    # ensure acpi_status is an acceptable string
+    case $acpi_status in
+        Charging    ) echo ;;
+        Discharging ) echo ;;
+        Full        ) echo ;;
+        *           ) die "\$acpi_status: $acpi_status" -- is not one of: Charging,Discharging,Full ;;
+    esac
 }
 
 die() {
