@@ -56,12 +56,13 @@ EOF
 }
 
 daemon_start() {
-    # set thresholds "array"
-    batt_thresholds="99 80 40 20 10 5"
-
+    # check if running already
     if [ -z "$FORCE" ]; then
         number_of_instances ; if [ "$spmcount" -gt 2 ]; then die "Simple Power Manager is already running"; fi
     fi
+
+    # set thresholds "array"
+    batt_thresholds="99 80 40 20 10 5"
 
     # one-time setup
     # verify acpi is available and create dir structure in $HOME/.config
@@ -71,6 +72,10 @@ daemon_start() {
     [ ! -d "$HOME/.config/simple-power-manager/state" ] && mkdir -p "$HOME/.config/simple-power-manager/state"
     [ ! -f "$HOME/.config/simple-power-manager/config" ] &&  make_defconfig
 
+    # clean potential left-over state
+    rm -f "$HOME/.config/simple-power-manager/state"/*
+
+    # start the "daemon" loop
     while true; do
         # if daemon is disabled, enter a sleep loop
         until [ ! -f "$HOME/.config/simple-power-manager/state/sleep" ]; do sleep 1; done
@@ -224,14 +229,14 @@ acpi_info() {
             * ) return 0 ;;
         esac
     }
-    intcheck "$batt" || die "\$batt -- is not an integer"
+    intcheck "$batt" || die "\$batt is not an integer"
 
     # ensure acpi_status is an acceptable string
     case $acpi_status in
         Charging    ) echo ;;
         Discharging ) echo ;;
         Full        ) echo ;;
-        *           ) die "\$acpi_status -- is not one of: Charging,Discharging,Full" ;;
+        *           ) die "\$acpi_status is not one of: Charging,Discharging,Full" ;;
     esac
 }
 
