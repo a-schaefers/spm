@@ -224,14 +224,14 @@ acpi_info() {
             * ) return 0 ;;
         esac
     }
-    intcheck "$batt" || die "\$batt: $batt -- is not an integer"
+    intcheck "$batt" || die "\$batt -- is not an integer"
 
     # ensure acpi_status is an acceptable string
     case $acpi_status in
         Charging    ) echo ;;
         Discharging ) echo ;;
         Full        ) echo ;;
-        *           ) die "\$acpi_status: $acpi_status -- is not one of: Charging,Discharging,Full" ;;
+        *           ) die "\$acpi_status -- is not one of: Charging,Discharging,Full" ;;
     esac
 }
 
