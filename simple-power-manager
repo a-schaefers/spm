@@ -73,7 +73,7 @@ daemon_start() {
     [ ! -f "$HOME/.config/simple-power-manager/config" ] &&  make_defconfig
 
     # clean potential left-over state
-    rm -f "$HOME/.config/simple-power-manager/state"/*
+    rm -f "$HOME/.config/simple-power-manager/state"/* > /dev/null 2>&1
 
     # start the "daemon" loop
     while true; do
@@ -110,7 +110,7 @@ daemon_start() {
         if [ "$acpi_status" = "Charging" ] || [ "$acpi_status" = "Full" ]
         then
             if [ ! -f "$HOME/.config/simple-power-manager/state/100" ];then
-                rm -f "$HOME/.config/simple-power-manager/state"/*
+                rm -f "$HOME/.config/simple-power-manager/state"/* > /dev/null 2>&1
                 touch "$HOME/.config/simple-power-manager/state/100"
                 user_custom_battery_normal_hook
             fi
@@ -184,8 +184,6 @@ EOF
 
 daemon_restart() {
     restart() {
-        rm "$HOME/.config/simple-power-manager/state"/* && \
-            echo "(SPM) Cleaning $HOME/.config/simple-power-manager/state"
         FORCE=1 simple-power-manager -d && \
             echo "(SPM) Restarting Daemon"
     }
