@@ -231,9 +231,9 @@ acpi_info() {
 
     # ensure acpi_status is an acceptable string
     case $acpi_status in
-        Charging    ) echo ;;
-        Discharging ) echo ;;
-        Full        ) echo ;;
+        Charging    ) return 0 ;;
+        Discharging ) return 0 ;;
+        Full        ) return 0 ;;
         *           ) die "\$acpi_status is not one of: Charging,Discharging,Full" ;;
     esac
 }
