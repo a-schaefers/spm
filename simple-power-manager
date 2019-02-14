@@ -64,11 +64,8 @@ daemon_start() {
     # set thresholds "array"
     batt_thresholds="99 80 40 20 10 5"
 
-    # one-time setup
-    # verify acpi is available and create dir structure in $HOME/.config
+    # one-time setup (verify acpi is available and create dir structure in $HOME/.config)
     command -v acpi > /dev/null || die "acpi not found"
-
-    # create default user config structure
     [ ! -d "$HOME/.config/simple-power-manager/state" ] && mkdir -p "$HOME/.config/simple-power-manager/state"
     [ ! -f "$HOME/.config/simple-power-manager/config" ] &&  make_defconfig
 
@@ -127,7 +124,7 @@ make_defconfig() {
 ############################################################################
 
 # example desktop notification command
-notifycmd() { notify-send "Battery: \$acpi_status \$batt"; }
+notifycmd() { notify-send "Battery: \$acpi_status \${batt}% \$print_time_remaining"; }
 
 # example backlight commands
 backlightcmd="xbacklight -set"
@@ -203,7 +200,7 @@ daemon_enable() {
 }
 
 daemon_status() {
-    acpi_info ; echo "(SPM) Battery: $acpi_status ${batt}%"
+    acpi_info ; echo "(SPM) Battery: $acpi_status ${batt}% $print_time_remaining"
     number_of_instances
     if [ "$spmcount" -lt 3 ]; then
         die "Simple Power Manager daemon is not running. Try \"simple-power-manager --daemon\""
@@ -217,26 +214,41 @@ daemon_status() {
 number_of_instances() { spmcount="$(pgrep -u "$USER" simple-power-ma | wc -l)"; }
 
 acpi_info() {
-    acpi="$(acpi | awk '{print $3 $4}')"
-    batt="${acpi#*,}" ; batt="${batt%\%*}"
-    acpi_status="${acpi%%,*}"
+    # get the wanted acpi columns + strip whitespace using awk
+    acpi="$(acpi | awk '{print $3 $4 $5 $6}')"
 
-    # ensure batt is an integer
-    intcheck () {
+    # ensure time_remaining is a valid input
+    time_remaining=${acpi##*,} ; time_remaining=${time_remaining%remaining}
+    time_remaining_check() {
+        case ${time_remaining} in
+            [0-9][0-9][[:punct:]][0-9][0-9][[:punct:]][0-9][0-9] | '') return 0 ;;
+            * ) return 1 ;;
+        esac
+    }
+    time_remaining_check "$time_remaining" || die "\$time_remaining is not of the form 00:00:00"
+    print_time_remaining="$time_remaining remaining" # re-add print formatting
+
+    # ensure batt is a valid input
+    batt="${acpi#*,}" ; batt="${batt%\%*}"
+    batt_check () {
         case ${1#[-+]} in
             *[!0-9]* | '') return 1 ;;
             * ) return 0 ;;
         esac
     }
-    intcheck "$batt" || die "\$batt is not an integer"
+    batt_check "$batt" || die "\$batt is not an integer"
 
-    # ensure acpi_status is an acceptable string
-    case $acpi_status in
-        Charging    ) return 0 ;;
-        Discharging ) return 0 ;;
-        Full        ) return 0 ;;
-        *           ) die "\$acpi_status is not one of: Charging,Discharging,Full" ;;
-    esac
+    # ensure acpi_status is a valid input
+    acpi_status="${acpi%%,*}"
+    acpi_status_check() {
+        case $acpi_status in
+             Charging    ) return 0 ;;
+             Discharging ) return 0 ;;
+             Full        ) return 0 ;;
+             *           ) return 1 ;;
+         esac
+     }
+    acpi_status_check "$batt" || die "\$acpi_status is not one of: Charging,Discharging,Full"
 }
 
 die() {
