@@ -37,7 +37,7 @@ Usage: simple-power-manager [OPTION...]
 ############################################################################
 
 # example desktop notification command
-notifycmd() { notify-send "Battery: $acpi_status ${batt}% $print_time_remaining"; }
+notifycmd() { notify-send "Battery: $acpi_status ${batt}%"; }
 
 # example backlight commands
 backlightcmd="xbacklight -set"
