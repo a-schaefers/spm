@@ -215,10 +215,12 @@ number_of_instances() { spmcount="$(pgrep -u "$USER" simple-power-ma | wc -l)"; 
 
 acpi_info() {
     # get the wanted acpi columns + strip whitespace using awk
+    # TODO: awk could do a lot more work instead of using so much case and parameter substitution...
     acpi="$(acpi | awk '{print $3 $4 $5 $6}')"
 
     # ensure time_remaining is a valid input
-    time_remaining=${acpi##*,} ; time_remaining=${time_remaining%remaining}
+    # TODO: this could be better...
+    time_remaining=${acpi##*,} ; time_remaining=${time_remaining%remaining} ; time_remaining=${time_remaining%until}
     time_remaining_check() {
         case ${time_remaining} in
             [0-9][0-9][[:punct:]][0-9][0-9][[:punct:]][0-9][0-9] | '') return 0 ;;
