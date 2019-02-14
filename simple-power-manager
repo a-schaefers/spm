@@ -177,6 +177,7 @@ user_custom_battery_normal_hook() {
 EOF
         echo "(SPM) Configuration script written to $HOME/.config/simple-power-manager/config"
         echo "(SPM) Please modify it accordingly before running simple-power-manager again."
+        exit 0
     else
         die "Configuration script already exists in $HOME/.config/simple-power-manager/config"
     fi
