@@ -49,12 +49,10 @@ sleep 5
 user_custom_low_battery_hook() {
     if [ "\$batt_percent" -lt 100 ] && [ "\$batt_percent" -gt 80 ]; then
         # 80-99% batt_percentery
-        notifycmd
         backlight_high
 
      elif [ "\$batt_percent" -lt 81 ] && [ "\$batt_percent" -gt 40 ]; then
         # 40-80% battery
-        notifycmd
         backlight_medium
 
      elif [ "\$batt_percent" -lt 41 ] && [ "\$batt_percent" -gt 20 ]; then
@@ -76,7 +74,7 @@ user_custom_low_battery_hook() {
         # 5% battery or less
         notifycmd
         backlight_crit
-        systemctl suspend
+        # systemctl suspend
     fi
 }
 
