@@ -56,7 +56,8 @@ EOF
 }
 
 daemon_start() {
-    [ "$(pidof -o %PPID -x "${0##*/}")" ] && die "Simple Power Manager is already running"
+    [ ! "$FORCE" = 1 ] && [ "$(pidof -o %PPID -x "${0##*/}")" ] && \
+        die "Simple Power Manager is already running"
 
     # set thresholds "array"
     batt_thresholds="99 80 40 20 10 5"
@@ -183,7 +184,7 @@ daemon_restart() {
             echo "(SPM) Restarting Daemon"
     }
     trap restart TERM
-    kill "$(pidof -o %PPID -x "simple-power-manager")"
+    killall simple-power-ma
 }
 
 daemon_disable() {
