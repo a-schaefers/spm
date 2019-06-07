@@ -140,7 +140,7 @@ user_custom_low_battery_hook() {
 
      elif [ "\$batt" -lt 81 ] && [ "\$batt" -gt 40 ]; then
         # 40-80% battery
-        backlight_high
+        backlight_medium
 
      elif [ "\$batt" -lt 41 ] && [ "\$batt" -gt 20 ]; then
         # 20-40% battery
