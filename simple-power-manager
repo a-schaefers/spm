@@ -56,10 +56,7 @@ EOF
 }
 
 daemon_start() {
-    # check if running already
-    if [ -z "$FORCE" ]; then
-        number_of_instances ; if [ "$spmcount" -gt 2 ]; then die "Simple Power Manager is already running"; fi
-    fi
+    [ "$(pidof -o %PPID -x "${0##*/}")" ] && die "Simple Power Manager is already running"
 
     # set thresholds "array"
     batt_thresholds="99 80 40 20 10 5"
@@ -186,7 +183,7 @@ daemon_restart() {
             echo "(SPM) Restarting Daemon"
     }
     trap restart TERM
-    killall simple-power-ma
+    kill "$(pidof -o %PPID -x "simple-power-manager")"
 }
 
 daemon_disable() {
@@ -201,17 +198,16 @@ daemon_enable() {
 
 daemon_status() {
     acpi_info ; echo "(SPM) Battery: $acpi_status ${batt}%"
-    number_of_instances
-    if [ "$spmcount" -lt 3 ]; then
+    if [ ! "$(pidof -o %PPID -x "${0##*/}")" ];
+    then
         die "Simple Power Manager daemon is not running. Try \"simple-power-manager --daemon\""
-    elif [ ! -f "$HOME/.config/simple-power-manager/state/sleep" ]; then
-        if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and enabled."; fi
+    elif [ "$(pidof -o %PPID -x "${0##*/}")" ] && \
+             [ -f "$HOME/.config/simple-power-manager/state/sleep" ]; then
+        echo "(SPM) Simple Power Manager daemon is running and disabled."
     else
-        if [ "$spmcount" -eq 3 ]; then echo "(SPM) Simple Power Manager daemon is running and disabled."; fi
+        echo "(SPM) Simple Power Manager daemon is running and enabled."
     fi
 }
-
-number_of_instances() { spmcount="$(pgrep -u "$USER" simple-power-ma | wc -l)"; }
 
 acpi_info() {
     # get the wanted acpi columns + strip whitespace using awk
