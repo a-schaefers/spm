@@ -1,0 +1,146 @@
+#!/bin/sh
+
+# MIT License
+
+# Copyright (c) 2018 Adam Schaefers sch@efers.org
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+die() {
+    [ $# -gt 0 ] && printf -- "%s\n" "(SPM) $*"
+    exit 1
+}
+
+make_defconfig() {
+    if [ ! -f "$HOME/.config/stupid-power-manager/config" ];then
+        cat <<EOF > "$HOME/.config/stupid-power-manager/config"
+# example desktop notification command
+notifycmd() { notify-send "Battery: \$batt_status \$batt_percent"; }
+
+# example backlight commands
+# backlightcmd="xbacklight -set"
+backlightcmd="light -S"
+
+backlight_high() { \$backlightcmd 100; }
+backlight_medium() { \$backlightcmd 80; }
+backlight_low() { \$backlightcmd 20; }
+backlight_crit() { \$backlightcmd 10; }
+
+# battery polling frequency
+sleep 5
+
+user_custom_low_battery_hook() {
+    if [ "\$batt_percent" -lt 100 ] && [ "\$batt_percent" -gt 80 ]; then
+        # 80-99% batt_percentery
+        notifycmd
+        backlight_high
+
+     elif [ "\$batt_percent" -lt 81 ] && [ "\$batt_percent" -gt 40 ]; then
+        # 40-80% battery
+        notifycmd
+        backlight_medium
+
+     elif [ "\$batt_percent" -lt 41 ] && [ "\$batt_percent" -gt 20 ]; then
+        # 20-40% battery
+        notifycmd
+        backlight_medium
+
+     elif [ "\$batt_percent" -lt 21 ] && [ "\$batt_percent" -gt 10 ]; then
+        # 10-20% battery
+        notifycmd
+        backlight_medium
+
+     elif [ "\$batt_percent" -lt 11 ] && [ "\$batt_percent" -gt 5 ]; then
+        # 5-10% battery
+        notifycmd
+        backlight_low
+
+     elif [ "\$batt_percent" -lt 6 ]; then
+        # 5% battery or less
+        notifycmd
+        backlight_crit
+        systemctl suspend
+    fi
+}
+
+user_custom_battery_normal_hook() {
+    # battery Charging / Full
+    notifycmd
+    backlight_high
+}
+EOF
+        echo "(SPM) Configuration script written to $HOME/.config/stupid-power-manager/config"
+        echo "(SPM) Please modify it accordingly before running stupid-power-manager again."
+    fi
+}
+
+[ "$(pidof -o %PPID -x "${0##*/}")" ] && die "Stupid Power Manager is already running"
+
+# set thresholds "array"
+batt_thresholds="99 80 40 20 10 5"
+
+# one-time setup
+[ ! -d "$HOME/.config/stupid-power-manager/state" ] && \
+    mkdir -p "$HOME/.config/stupid-power-manager/state"
+
+[ ! -f "$HOME/.config/stupid-power-manager/config" ] && \
+    make_defconfig
+
+# clean potential left-over state
+rm -f "$HOME/.config/stupid-power-manager/state"/* > /dev/null 2>&1
+
+# start the "daemon" loop
+while true; do
+    # sourcing of the user config file happens now
+    if [ -f "$HOME/.config/stupid-power-manager/config" ];then
+        . "$HOME/.config/stupid-power-manager/config"
+    else
+        make_defconfig
+        . "$HOME/.config/stupid-power-manager/config"
+    fi
+
+    # get battery % and status
+    batt_status="$(cat /sys/class/power_supply/BAT0/status)"
+    batt_percent="$(cat /sys/class/power_supply/BAT0/capacity)"
+
+    # if trigger has not already been fired, and if battery % is less than or equal
+    # to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
+    if [ "$batt_status" = "Discharging" ];then
+        echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
+            if [ "$batt_percent" -eq "$state" ] || [ "$batt_percent" -lt "$state" ]; then
+                if [ ! -f "$HOME/.config/stupid-power-manager/state/$state" ]; then
+                    rm -f "$HOME/.config/stupid-power-manager/state/100"
+                    touch "$HOME/.config/stupid-power-manager/state/$state"
+                    user_custom_low_battery_hook
+                fi
+            fi
+        done
+    fi
+
+    # if trigger has not already been fired, and if battery state is Charging or
+    # Full, then run user_custom_battery_normal_hook
+    if [ "$batt_status" = "Charging" ] || [ "$batt_status" = "Full" ]
+    then
+        if [ ! -f "$HOME/.config/stupid-power-manager/state/100" ];then
+            rm -f "$HOME/.config/stupid-power-manager/state"/* > /dev/null 2>&1
+            touch "$HOME/.config/stupid-power-manager/state/100"
+            user_custom_battery_normal_hook
+        fi
+    fi
+done

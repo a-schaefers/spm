@@ -1,46 +1,20 @@
-* KISS simple-power-manager...
-Simple Power Manager is a programmable shell script daemon that performs actions based on power thresholds.
-By default simple-power-manager is pre-configured to send desktop notifications using notify-send
-and adjust brightness levels using xbacklight. Being "programmable," edit ~/.config/simple-power-manager/config
-to make it do almost anything. Simple Power Manager can be thought of as a lightweight alternative
+* KISS stupid-power-manager...
+Stupid Power Manager can be thought of as a lightweight alternative
 to similar applications such as xfce-power-manager and mate-power-manager.
 
 * Install
-just put the simple-power-manager somewhere on your path. You'll need the "acpi" tool as well, its only dependency.
-
-* Autostart
-it can be autostarted with .xinitrc or your preferred method.
-#+BEGIN_SRC bash
-simple-power-manager --daemon
-#+END_SRC
-
-* Usage
-the usage listing from the -h --help command should be fairly self-explanatory
-#+BEGIN_SRC txt
-Usage: simple-power-manager [OPTION...]
-
-  -d, --daemon               start the daemon and fork the process
-  -D, --default-config       regenerate the default configuration file
-  --restart                  restart the daemon
-  --enable                   awake the daemon from a sleep loop
-  --disable                  put the daemon in a sleep loop
-  --status                   display whether the daemon is enabled or disabled
-  --about                    display more information about this program
-  -h, --help                 display this help menu
-#+END_SRC
+just put stupid-power-manager somewhere on the $PATH, execute and fork it.
 
 * Easy customization
- modify $HOME/.config/simple-power-manager/config to do your bidding!
-#+BEGIN_SRC bash
-############################################################################
-# DEFAULT CONFIG - CUSTOMIZE ME - /bin/sh - it's shell script, be careful! #
-############################################################################
+ modify $HOME/.config/stupid-power-manager/config to do your bidding!
 
+#+BEGIN_SRC bash
 # example desktop notification command
-notifycmd() { notify-send "Battery: $acpi_status ${batt}%"; }
+notifycmd() { notify-send "Battery: $batt_status $batt_percent"; }
 
 # example backlight commands
 backlightcmd="xbacklight -set"
+
 backlight_high() { $backlightcmd 100; }
 backlight_medium() { $backlightcmd 80; }
 backlight_low() { $backlightcmd 20; }
@@ -50,29 +24,32 @@ backlight_crit() { $backlightcmd 10; }
 sleep 5
 
 user_custom_low_battery_hook() {
-    if [ "$batt" -lt 100 ] && [ "$batt" -gt 80 ]; then
-        # 80-99% battery
+    if [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ]; then
+        # 80-99% batt_percentery
+        notifycmd
         backlight_high
 
-     elif [ "$batt" -lt 81 ] && [ "$batt" -gt 40 ]; then
+     elif [ "$batt_percent" -lt 81 ] && [ "$batt_percent" -gt 40 ]; then
         # 40-80% battery
-        backlight_high
-
-     elif [ "$batt" -lt 41 ] && [ "$batt" -gt 20 ]; then
-        # 20-40% battery
+        notifycmd
         backlight_medium
 
-     elif [ "$batt" -lt 21 ] && [ "$batt" -gt 10 ]; then
+     elif [ "$batt_percent" -lt 41 ] && [ "$batt_percent" -gt 20 ]; then
+        # 20-40% battery
+        notifycmd
+        backlight_medium
+
+     elif [ "$batt_percent" -lt 21 ] && [ "$batt_percent" -gt 10 ]; then
         # 10-20% battery
         notifycmd
         backlight_medium
 
-     elif [ "$batt" -lt 11 ] && [ "$batt" -gt 5 ]; then
+     elif [ "$batt_percent" -lt 11 ] && [ "$batt_percent" -gt 5 ]; then
         # 5-10% battery
         notifycmd
         backlight_low
 
-     elif [ "$batt" -lt 6 ]; then
+     elif [ "$batt_percent" -lt 6 ]; then
         # 5% battery or less
         notifycmd
         backlight_crit
