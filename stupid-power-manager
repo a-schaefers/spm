@@ -34,8 +34,9 @@ make_defconfig() {
 notifycmd() { notify-send "Battery: \$batt_status \$batt_percent"; }
 
 # example backlight commands
-# backlightcmd="xbacklight -set"
-backlightcmd="light -S"
+backlightcmd="xbacklight -set"
+# backlightcmd="light -S"
+# backlightcmd="brightnessctl s"
 
 backlight_high() { \$backlightcmd 100; }
 backlight_medium() { \$backlightcmd 80; }
