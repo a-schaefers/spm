@@ -1,6 +1,6 @@
 * KISS stupid-power-manager...
-Stupid Power Manager can be thought of as a lightweight alternative
-to similar applications such as xfce-power-manager and mate-power-manager.
+Stupid Power Manager is a programmable, lightweight alternative
+to gui / tray apps like xfce-power-manager
 
 * Install
 just put stupid-power-manager somewhere on the $PATH, execute and fork it.
