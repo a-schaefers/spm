@@ -98,7 +98,6 @@ batt_thresholds="99 80 40 20 10 5"
 [ ! -f "$HOME/.config/stupid-power-manager/config" ] && \
     make_defconfig
 
-# clean potential left-over state
 rm -f "$HOME/.config/stupid-power-manager/state"/*
 
 while true; do
