@@ -2,7 +2,7 @@
 
 # MIT License
 
-# Copyright (c) 2018 Adam Schaefers paxchristi888@gmail.com
+# Copyright (c) 2019 Adam Schaefers paxchristi888@gmail.com
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ die() {
 }
 
 make_defconfig() {
-    if [ ! -f "$HOME/.config/stupid-power-manager/config" ];then
+    if [ ! -f "$HOME/.config/stupid-power-manager/config" ]; then
         cat <<EOF > "$HOME/.config/stupid-power-manager/config"
 # example desktop notification command
 notifycmd() { notify-send "Battery: \$batt_status \$batt_percent"; }
@@ -91,36 +91,28 @@ EOF
 
 [ "$(pidof -o %PPID -x "${0##*/}")" ] && die "Stupid Power Manager is already running"
 
-# set thresholds "array"
 batt_thresholds="99 80 40 20 10 5"
 
-# one-time setup
 [ ! -d "$HOME/.config/stupid-power-manager/state" ] && \
     mkdir -p "$HOME/.config/stupid-power-manager/state"
-
 [ ! -f "$HOME/.config/stupid-power-manager/config" ] && \
     make_defconfig
 
 # clean potential left-over state
-rm -f "$HOME/.config/stupid-power-manager/state"/* > /dev/null 2>&1
+rm -f "$HOME/.config/stupid-power-manager/state"/*
 
-# start the "daemon" loop
 while true; do
-    # sourcing of the user config file happens now
-    if [ -f "$HOME/.config/stupid-power-manager/config" ];then
+    if [ -f "$HOME/.config/stupid-power-manager/config" ]; then
         . "$HOME/.config/stupid-power-manager/config"
     else
         make_defconfig
         . "$HOME/.config/stupid-power-manager/config"
     fi
 
-    # get battery % and status
     batt_status="$(cat /sys/class/power_supply/BAT0/status)"
     batt_percent="$(cat /sys/class/power_supply/BAT0/capacity)"
 
-    # if trigger has not already been fired, and if battery % is less than or equal
-    # to a threshold and if battery state is Discharging, then run user_custom_low_battery_hook
-    if [ "$batt_status" = "Discharging" ];then
+    if [ "$batt_status" = "Discharging" ]; then
         echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
             if [ "$batt_percent" -eq "$state" ] || [ "$batt_percent" -lt "$state" ]; then
                 if [ ! -f "$HOME/.config/stupid-power-manager/state/$state" ]; then
@@ -131,13 +123,9 @@ while true; do
             fi
         done
     fi
-
-    # if trigger has not already been fired, and if battery state is Charging or
-    # Full, then run user_custom_battery_normal_hook
-    if [ "$batt_status" = "Charging" ] || [ "$batt_status" = "Full" ]
-    then
-        if [ ! -f "$HOME/.config/stupid-power-manager/state/100" ];then
-            rm -f "$HOME/.config/stupid-power-manager/state"/* > /dev/null 2>&1
+    if [ "$batt_status" = "Charging" ] || [ "$batt_status" = "Full" ]; then
+        if [ ! -f "$HOME/.config/stupid-power-manager/state/100" ]; then
+            rm -f "$HOME/.config/stupid-power-manager/state"/*
             touch "$HOME/.config/stupid-power-manager/state/100"
             user_custom_battery_normal_hook
         fi
