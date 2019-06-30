@@ -40,6 +40,8 @@ batt_thresholds="99 80 40 20 10 5"
 
 rm -f "$HOME/.config/stupid-power-manager/state"/* > /dev/null 2>&1 #shh
 
+. "$HOME/.config/stupid-power-manager/config"
+
 while true; do
     sleep 5
 
