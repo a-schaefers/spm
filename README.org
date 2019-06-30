@@ -1,24 +1,21 @@
 * KISS stupid-power-manager...
-Stupid Power Manager is a programmable, lightweight alternative
-to gui / tray apps like xfce-power-manager
+  Stupid Power Manager is a programmable, lightweight alternative
+  to gui / tray apps like xfce-power-manager
 
 * Install
-just put stupid-power-manager somewhere on the $PATH, execute and fork it.
+  just put stupid-power-manager somewhere on the $PATH, execute and fork it.
 
 * Easy customization
- modify $HOME/.config/stupid-power-manager/config to do your bidding!
+  create $HOME/.config/stupid-power-manager/config to do your bidding!
 
-#+BEGIN_SRC bash
+  #+BEGIN_SRC bash
 # example desktop notification command
-notifycmd() { notify-send "Battery: $batt_status $batt_percent"; }
+notifycmd() { notify-send "Battery: $batt_status ${batt_percent}%"; }
 
 # example backlight commands
-backlightcmd="xbacklight -set"
-
-backlight_high() { $backlightcmd 100; }
-backlight_medium() { $backlightcmd 80; }
-backlight_low() { $backlightcmd 20; }
-backlight_crit() { $backlightcmd 10; }
+# backlightcmd="xbacklight -set"
+# backlightcmd="light -S"
+backlightcmd="brightnessctl s" ; optPercent="%"
 
 # battery polling frequency
 sleep 5
@@ -27,22 +24,22 @@ user_custom_low_battery_hook() {
     if [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ]; then
         # 80-99% batt_percentery
         notifycmd
-        backlight_high
+        $backlightcmd 100$optPercent
 
      elif [ "$batt_percent" -lt 81 ] && [ "$batt_percent" -gt 40 ]; then
         # 40-80% battery
         notifycmd
-        backlight_medium
+        $backlightcmd 80$optPercent
 
      elif [ "$batt_percent" -lt 41 ] && [ "$batt_percent" -gt 20 ]; then
         # 20-40% battery
         notifycmd
-        backlight_medium
+        $backlightcmd 40$optPercent
 
      elif [ "$batt_percent" -lt 21 ] && [ "$batt_percent" -gt 10 ]; then
         # 10-20% battery
         notifycmd
-        backlight_medium
+        $backlightcmd 20$optPercent
 
      elif [ "$batt_percent" -lt 11 ] && [ "$batt_percent" -gt 5 ]; then
         # 5-10% battery
@@ -52,13 +49,14 @@ user_custom_low_battery_hook() {
      elif [ "$batt_percent" -lt 6 ]; then
         # 5% battery or less
         notifycmd
-        backlight_crit
+        $backlightcmd 5$optPercent
+        systemctl suspend
     fi
 }
 
 user_custom_battery_normal_hook() {
     # battery Charging / Full
     notifycmd
-    backlight_high
+    $backlightcmd 100$optPercent
 }
-#+END_SRC
+  #+END_SRC
