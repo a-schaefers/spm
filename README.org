@@ -17,9 +17,6 @@ notifycmd() { notify-send "Battery: $batt_status ${batt_percent}%"; }
 # backlightcmd="light -S"
 backlightcmd="brightnessctl s" ; optPercent="%"
 
-# battery polling frequency
-sleep 5
-
 user_custom_low_battery_hook() {
     if [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ]; then
         # 80-99% batt_percentery
