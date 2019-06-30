@@ -40,14 +40,10 @@ batt_thresholds="99 80 40 20 10 5"
 
 rm -f "$HOME/.config/stupid-power-manager/state"/* > /dev/null 2>&1 #shh
 
-. "$HOME/.config/stupid-power-manager/config"
-
 while true; do
-    sleep 5
-
+    . "$HOME/.config/stupid-power-manager/config"
     batt_status="$(cat /sys/class/power_supply/BAT0/status)"
     batt_percent="$(cat /sys/class/power_supply/BAT0/capacity)"
-
     if [ "$batt_status" = "Discharging" ]; then
         echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
             if [ "$batt_percent" -eq "$state" ] || [ "$batt_percent" -lt "$state" ]; then
@@ -66,4 +62,5 @@ while true; do
             user_custom_battery_normal_hook
         fi
     fi
+    sleep 5
 done
