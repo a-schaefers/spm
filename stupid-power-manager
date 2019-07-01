@@ -62,5 +62,5 @@ while true; do
             user_custom_battery_normal_hook
         fi
     fi
-    sleep 5
+    sleep 2
 done
