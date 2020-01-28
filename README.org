@@ -1,4 +1,4 @@
-* SPM
+* SPM 2.0 Tue 28 Jan 2020
   Simple Power Manager is an easily programmable,
 lightweight alternative to gui / tray apps like xfce-power-manager
 
