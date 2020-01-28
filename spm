@@ -23,41 +23,49 @@
 # SOFTWARE.
 
 die() {
-    [ $# -gt 0 ] && printf -- "%s\n" "(SPM) $*"
+    [ "$1" ] && printf "(SPM) %s\n" "$*"
     exit 1
 }
 
-[ "$(pidof -o %PPID -x "${0##*/}")" ] && die "SPM is already running"
+[ "$(pidof -o %PPID -x "${0##*/}")" ] &&
+    die "SPM is already running"
 
-batt_thresholds="99 80 40 20 10 5"
+# Battery thresholds.
+set -- 99 80 40 20 10 5
 
-[ -d "$HOME/.config/spm/state" ] || mkdir -p "$HOME/.config/spm/state"
+mkdir -p "${conf_dir:=${XDG_CONFIG_HOME:-$HOME/.config}/spm}/state"
 
-[ -f "$HOME/.config/spm/config" ] ||die "Please create $HOME/.config/spm/config and try again."
+[ -f "$conf_dir/config" ] ||
+    die "Please create $conf_dir/config and try again."
 
-rm -f "$HOME/.config/spm/state"/* > /dev/null 2>&1 #shh
+while :; do
+    . "$conf_dir/config"
 
-while true; do
-    . "$HOME/.config/spm/config"
-    batt_status="$(cat /sys/class/power_supply/BAT0/status)"
-    batt_percent="$(cat /sys/class/power_supply/BAT0/capacity)"
-    if [ "$batt_status" = "Discharging" ]; then
-        echo "$batt_thresholds" | tr ' ' '\n' | while read -r state; do
-            if [ "$batt_percent" -eq "$state" ] || [ "$batt_percent" -lt "$state" ]; then
-                if [ ! -f "$HOME/.config/spm/state/$state" ]; then
-                    rm -f "$HOME/.config/spm/state/100"
-                    touch "$HOME/.config/spm/state/$state"
-                    user_custom_low_battery_hook
+    read -r batt_status < /sys/class/power_supply/BAT0/status
+    read -r batt_percent < /sys/class/power_supply/BAT0/capacity
+
+    case $batt_status in
+        Discharging)
+            echo "$*" | tr ' ' '\n' | while read -r state; do
+                if [ "$batt_percent" -eq "$state" ] ||
+                       [ "$batt_percent" -lt "$state" ]; then
+                    [ -f "$conf_dir/state/$state" ] || {
+                        rm -f "$conf_dir/state/100"
+                        touch "$conf_dir/state/$state"
+                        user_custom_low_battery_hook
+                    }
                 fi
-            fi
-        done
-    fi
-    if [ "$batt_status" = "Charging" ] || [ "$batt_status" = "Full" ]; then
-        if [ ! -f "$HOME/.config/spm/state/100" ]; then
-            rm -f "$HOME/.config/spm/state"/* > /dev/null 2>&1
-            touch "$HOME/.config/spm/state/100"
-            user_custom_battery_normal_hook
-        fi
-    fi
+            done
+            ;;
+
+        Charging)
+            [ -f "$conf_dir/state/100" ] || {
+                rm -f "$conf_dir/state"/* >/dev/null 2>&1
+                touch "$conf_dir/state/100"
+                user_custom_battery_normal_hook
+            }
+            ;;
+    esac
+
     sleep 10
 done
