@@ -4,12 +4,11 @@ set -- 99 80 40 20 10 5
 
 mkdir -p "${conf_dir:=${XDG_CONFIG_HOME:-$HOME/.config}/spm}/state"
 
-while :; do
-    . "$conf_dir/config" || {
-        printf "(SPM) %s\n" "Default $conf_dir/config Created. Please modify it accordingly and run the script again."
-        cat <<EOF > "$conf_dir/config"
+[ -f "$conf_dir/config" ] || {
+    printf "(SPM) %s\n" "Default $conf_dir/config Created. Please modify it accordingly and run the script again."
+    cat <<EOF > "$conf_dir/config"
 # example desktop notification command
-notifycmd() { notify-send "Battery: $batt_status ${batt_percent}%"; }
+notifycmd() { notify-send "Battery: \$batt_status \${batt_percent}%"; }
 
 # example backlight commands
 # backlightcmd="xbacklight -set"                                #uncomment for xbacklight
@@ -19,50 +18,53 @@ backlightcmd="lux -S"            ; pct="%"                      #uncomment for l
 
 user_custom_low_battery_hook() {
     # 80-99% batt_percentery
-    [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ] && {
+    [ "\$batt_percent" -lt 100 ] && [ "\$batt_percent" -gt 80 ] && {
         notifycmd
-        $backlightcmd 80$pct
+        \$backlightcmd 80\$pct
     }
 
     # 40-80% battery
-    [ "$batt_percent" -lt 81 ] && [ "$batt_percent" -gt 40 ] && {
+    [ "\$batt_percent" -lt 81 ] && [ "\$batt_percent" -gt 40 ] && {
         notifycmd
-        $backlightcmd 80$pct
+        \$backlightcmd 80\$pct
     }
 
     # 20-40% battery
-    [ "$batt_percent" -lt 41 ] && [ "$batt_percent" -gt 20 ] && {
+    [ "\$batt_percent" -lt 41 ] && [ "\$batt_percent" -gt 20 ] && {
         notifycmd
-        $backlightcmd 40$pct
+        \$backlightcmd 40\$pct
     }
 
     # 10-20% battery
-    [ "$batt_percent" -lt 21 ] && [ "$batt_percent" -gt 10 ] && {
+    [ "\$batt_percent" -lt 21 ] && [ "\$batt_percent" -gt 10 ] && {
         notifycmd
-        $backlightcmd 40$pct
+        \$backlightcmd 40\$pct
     }
 
     # 5-10% battery
-    [ "$batt_percent" -lt 11 ] && [ "$batt_percent" -gt 5 ] && {
+    [ "\$batt_percent" -lt 11 ] && [ "\$batt_percent" -gt 5 ] && {
         notifycmd
-        $backlightcmd 5$pct
+        \$backlightcmd 5\$pct
     }
 
     # 5% battery or less
-    [ "$batt_percent" -lt 6 ] && {
+    [ "\$batt_percent" -lt 6 ] && {
         notifycmd
-        $backlightcmd 5$pct
+        \$backlightcmd 5\$pct
     }
 }
 
 user_custom_battery_normal_hook() {
     # battery Charging / Full
     notifycmd
-    $backlightcmd 100$pct
+    \$backlightcmd 100\$pct
 }
 EOF
-        exit 0
-    }
+    exit 0
+}
+
+while :; do
+    . "$conf_dir/config"
 
     read -r batt_status < /sys/class/power_supply/BAT0/status
     read -r batt_percent < /sys/class/power_supply/BAT0/capacity
@@ -73,7 +75,7 @@ EOF
                 if [ "$batt_percent" -le "$state" ]; then
                     [ -f "$conf_dir/state/$state" ] || {
                         rm -f "$conf_dir/state/100"
-                        :>"$conf_dir/state/$state"
+                        : > "$conf_dir/state/$state"
                         user_custom_low_battery_hook
                     }
                 fi
@@ -82,7 +84,7 @@ EOF
         Charging)
             [ -f "$conf_dir/state/100" ] || {
                 rm -f "$conf_dir/state"/*
-                :> "$conf_dir/state/100"
+                : > "$conf_dir/state/100"
                 user_custom_battery_normal_hook
             }
             ;;
