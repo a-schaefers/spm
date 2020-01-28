@@ -1,64 +1,6 @@
 * SPM
-  SPM is a programmable, lightweight alternative
-  to gui / tray apps like xfce-power-manager
+  Simple Power Manager is an easily programmable,
+lightweight alternative to gui / tray apps like xfce-power-manager
 
 * Install
-  just put spm somewhere on the $PATH, execute and fork it.
-
-* Easy customization
-  create $HOME/.config/spm/config to do your bidding!
-
-  #+BEGIN_SRC sh
-    # example desktop notification command
-    notifycmd() { notify-send "Battery: $batt_status ${batt_percent}%"; }
-
-    # example backlight commands
-    # backlightcmd="xbacklight -set"                                #uncomment for xbacklight
-    # backlightcmd="light -S"                                       #uncomment for light
-    # backlightcmd="brightnessctl s" ; pct="%"                      #uncomment for brightnessctl
-    backlightcmd="lux -S"            ; pct="%"                      #uncomment for lux
-
-    user_custom_low_battery_hook() {
-        # 80-99% batt_percentery
-        [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ] && {
-            notifycmd
-            $backlightcmd 80$pct
-        }
-
-        # 40-80% battery
-        [ "$batt_percent" -lt 81 ] && [ "$batt_percent" -gt 40 ] && {
-            notifycmd
-            $backlightcmd 80$pct
-        }
-
-        # 20-40% battery
-        [ "$batt_percent" -lt 41 ] && [ "$batt_percent" -gt 20 ] && {
-            notifycmd
-            $backlightcmd 40$pct
-        }
-
-        # 10-20% battery
-        [ "$batt_percent" -lt 21 ] && [ "$batt_percent" -gt 10 ] && {
-            notifycmd
-            $backlightcmd 40$pct
-        }
-
-        # 5-10% battery
-        [ "$batt_percent" -lt 11 ] && [ "$batt_percent" -gt 5 ] && {
-            notifycmd
-            $backlightcmd 5$pct
-        }
-
-        # 5% battery or less
-        [ "$batt_percent" -lt 6 ] && {
-            notifycmd
-            $backlightcmd 5$pct
-        }
-    }
-
-    user_custom_battery_normal_hook() {
-        # battery Charging / Full
-        notifycmd
-        $backlightcmd 100$pct
-    }
-#+END_SRC
+  Put spm somewhere on the $PATH. The first run will generate a default config. Modify the default config accordingly and then fork it &
