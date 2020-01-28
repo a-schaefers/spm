@@ -1,4 +1,4 @@
-* KISS spm...
+* SPM
   SPM is a programmable, lightweight alternative
   to gui / tray apps like xfce-power-manager
 
