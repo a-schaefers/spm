@@ -27,9 +27,6 @@ die() {
     exit 1
 }
 
-[ "$(pidof -o %PPID -x "${0##*/}")" ] &&
-    die "SPM is already running"
-
 # Battery thresholds.
 set -- 99 80 40 20 10 5
 
@@ -46,9 +43,8 @@ while :; do
 
     case $batt_status in
         Discharging)
-            echo "$*" | tr ' ' '\n' | while read -r state; do
-                if [ "$batt_percent" -eq "$state" ] ||
-                       [ "$batt_percent" -lt "$state" ]; then
+            for state in "$@"; do
+                if [ "$batt_percent" -le "$state" ]; then
                     [ -f "$conf_dir/state/$state" ] || {
                         rm -f "$conf_dir/state/100"
                         touch "$conf_dir/state/$state"
@@ -59,7 +55,7 @@ while :; do
             ;;
         Charging)
             [ -f "$conf_dir/state/100" ] || {
-                rm -f "$conf_dir/state"/* >/dev/null 2>&1
+                rm -f "$conf_dir/state"/*
                 touch "$conf_dir/state/100"
                 user_custom_battery_normal_hook
             }

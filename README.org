@@ -19,7 +19,6 @@
     backlightcmd="lux -S"            ; pct="%"                      #uncomment for lux
 
     user_custom_low_battery_hook() {
-
         # 80-99% batt_percentery
         [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ] && {
             notifycmd
