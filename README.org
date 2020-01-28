@@ -9,56 +9,57 @@
   create $HOME/.config/spm/config to do your bidding!
 
   #+BEGIN_SRC sh
-# example desktop notification command
-notifycmd() { notify-send "Battery: $batt_status ${batt_percent}%"; }
+    # example desktop notification command
+    notifycmd() { notify-send "Battery: $batt_status ${batt_percent}%"; }
 
-# example backlight commands
-# backlightcmd="xbacklight -set"                                #uncomment for xbacklight
-# backlightcmd="light -S"                                       #uncomment for light
-# backlightcmd="brightnessctl s" ; optPercent="%"                #uncomment for brightnessctl
-backlightcmd="lux -S" ; optPercent="%"                          #uncomment for lux
+    # example backlight commands
+    # backlightcmd="xbacklight -set"                                #uncomment for xbacklight
+    # backlightcmd="light -S"                                       #uncomment for light
+    # backlightcmd="brightnessctl s" ; optPercent="%"               #uncomment for brightnessctl
+    backlightcmd="lux -S" ; optPercent="%"                         #uncomment for lux
 
-user_custom_low_battery_hook() {
-    [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ] && {
+    user_custom_low_battery_hook() {
+
         # 80-99% batt_percentery
-        notifycmd
-        $backlightcmd 80$optPercent
-    }
+        [ "$batt_percent" -lt 100 ] && [ "$batt_percent" -gt 80 ] && {
+            notifycmd
+            $backlightcmd 80$optPercent
+        }
 
-    [ "$batt_percent" -lt 81 ] && [ "$batt_percent" -gt 40 ] && {
         # 40-80% battery
-        notifycmd
-        $backlightcmd 80$optPercent
-    }
+        [ "$batt_percent" -lt 81 ] && [ "$batt_percent" -gt 40 ] && {
+            notifycmd
+            $backlightcmd 80$optPercent
+        }
 
-    [ "$batt_percent" -lt 41 ] && [ "$batt_percent" -gt 20 ] && {
         # 20-40% battery
-        notifycmd
-        $backlightcmd 40$optPercent
-    }
+        [ "$batt_percent" -lt 41 ] && [ "$batt_percent" -gt 20 ] && {
+            notifycmd
+            $backlightcmd 40$optPercent
+        }
 
-    [ "$batt_percent" -lt 21 ] && [ "$batt_percent" -gt 10 ] && {
         # 10-20% battery
-        notifycmd
-        $backlightcmd 40$optPercent
-    }
+        [ "$batt_percent" -lt 21 ] && [ "$batt_percent" -gt 10 ] && {
+            notifycmd
+            $backlightcmd 40$optPercent
+        }
 
-    [ "$batt_percent" -lt 11 ] && [ "$batt_percent" -gt 5 ] && {
         # 5-10% battery
-        notifycmd
-        $backlightcmd 5$optPercent
-    }
+        [ "$batt_percent" -lt 11 ] && [ "$batt_percent" -gt 5 ] && {
+            notifycmd
+            $backlightcmd 5$optPercent
+        }
 
-    [ "$batt_percent" -lt 6 ] && {
         # 5% battery or less
-        notifycmd
-        $backlightcmd 5$optPercent
+        [ "$batt_percent" -lt 6 ] && {
+            notifycmd
+            $backlightcmd 5$optPercent
+        }
     }
-}
 
-user_custom_battery_normal_hook() {
-    # battery Charging / Full
-    notifycmd
-    $backlightcmd 100$optPercent
-}
+    user_custom_battery_normal_hook() {
+        # battery Charging / Full
+        notifycmd
+        $backlightcmd 100$optPercent
+    }
 #+END_SRC
