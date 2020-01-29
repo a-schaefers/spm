@@ -85,7 +85,7 @@ while :; do
                 fi
             done
             ;;
-        Charging)
+        Charging|Full)
             [ -f "$conf_dir/state/100" ] || {
                 rm -f "$conf_dir/state"/*
                 : > "$conf_dir/state/100"
