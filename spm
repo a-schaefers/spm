@@ -1,16 +1,20 @@
 #!/bin/sh
 
-set -- 99 80 40 20 10 5
-
 mkdir -p "${conf_dir:=${XDG_CONFIG_HOME:-$HOME/.config}/spm}/state"
 
 [ -f "$conf_dir/config" ] || {
     printf "(SPM) %s\n" "Default $conf_dir/config Created. Please modify it accordingly and run the script again."
     cat <<EOF > "$conf_dir/config"
-# example desktop notification command
+# power threshholds
+set -- 99 80 40 20 10 5
+
+# battery polling frequency
+sleep 10
+
+# desktop notification command
 notifycmd() { notify-send "Battery: \$batt_status \${batt_percent}%"; }
 
-# example backlight commands
+# backlight command
 # backlightcmd="xbacklight -set"                                #uncomment for xbacklight
 # backlightcmd="light -S"                                       #uncomment for light
 # backlightcmd="brightnessctl s" ; pct="%"                      #uncomment for brightnessctl
@@ -89,6 +93,4 @@ while :; do
             }
             ;;
     esac
-
-    sleep 10
 done
