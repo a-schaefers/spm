@@ -20,7 +20,7 @@ notifycmd() { notify-send "Battery: \$batt_status \${batt_percent}%"; }
 # backlightcmd="brightnessctl s" ; pct="%"                      #uncomment for brightnessctl
 backlightcmd="lux -S"            ; pct="%"                      #uncomment for lux
 
-user_custom_low_battery_hook() {
+discharging_hook() {
     # 80-99% batt_percentery
     [ "\$batt_percent" -lt 100 ] && [ "\$batt_percent" -gt 80 ] && {
         notifycmd
@@ -58,7 +58,7 @@ user_custom_low_battery_hook() {
     }
 }
 
-user_custom_battery_normal_hook() {
+charging_or_full_hook() {
     # battery Charging / Full
     notifycmd
     \$backlightcmd 100\$pct
@@ -70,7 +70,11 @@ EOF
 while :; do
     . "$conf_dir/config"
 
-    read -r batt_status < /sys/class/power_supply/BAT0/status
+    read -r batt_status < /sys/class/power_supply/BAT0/status || {
+        printf -- "%s\n" "(SPM) Battery not detected."
+        exit 1
+    }
+
     read -r batt_percent < /sys/class/power_supply/BAT0/capacity
 
     case $batt_status in
@@ -80,7 +84,7 @@ while :; do
                     [ -f "$conf_dir/state/$state" ] || {
                         rm -f "$conf_dir/state/100"
                         : > "$conf_dir/state/$state"
-                        user_custom_low_battery_hook
+                        discharging_hook
                     }
                 fi
             done
@@ -89,7 +93,7 @@ while :; do
             [ -f "$conf_dir/state/100" ] || {
                 rm -f "$conf_dir/state"/*
                 : > "$conf_dir/state/100"
-                user_custom_battery_normal_hook
+                charging_or_full_hook
             }
             ;;
     esac
