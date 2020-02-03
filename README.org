@@ -1,6 +1,6 @@
-* SPM 2.0 Tue 28 Jan 2020
+* SPM
   Simple Power Manager is an easily programmable,
 lightweight alternative to gui / tray apps like xfce-power-manager
 
 * Install
-  Put spm somewhere on the $PATH. The first run will generate a default config. Modify the default config accordingly and then fork it &
+  Put spm somewhere on '$PATH'. The first run will generate a default config. Modify the default config accordingly and then fork it &

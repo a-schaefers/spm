@@ -5,6 +5,9 @@ mkdir -p "${conf_dir:=${XDG_CONFIG_HOME:-$HOME/.config}/spm}/state"
 [ -f "$conf_dir/config" ] || {
     printf "(SPM) %s\n" "Default $conf_dir/config Created. Please modify it accordingly and run the script again."
     cat <<EOF > "$conf_dir/config"
+# System battery directory
+sys_battery="/sys/class/power_supply/BAT0"
+
 # power threshholds
 set -- 99 80 40 20 10 5
 
@@ -70,12 +73,14 @@ EOF
 while :; do
     . "$conf_dir/config"
 
-    read -r batt_status < /sys/class/power_supply/BAT0/status || {
+    [ -d $sys_battery ] || {
         printf -- "%s\n" "(SPM) Battery not detected."
         exit 1
     }
 
-    read -r batt_percent < /sys/class/power_supply/BAT0/capacity
+    read -r batt_status < ${sys_battery}/status
+
+    read -r batt_percent < ${sys_battery}/capacity
 
     case $batt_status in
         Discharging)
@@ -83,7 +88,7 @@ while :; do
                 if [ "$batt_percent" -le "$state" ]; then
                     [ -f "$conf_dir/state/$state" ] || {
                         rm -f "$conf_dir/state/100"
-                        : > "$conf_dir/state/$state"
+                        > "$conf_dir/state/$state"
                         discharging_hook
                     }
                 fi
@@ -92,7 +97,7 @@ while :; do
         Charging|Full)
             [ -f "$conf_dir/state/100" ] || {
                 rm -f "$conf_dir/state"/*
-                : > "$conf_dir/state/100"
+                > "$conf_dir/state/100"
                 charging_or_full_hook
             }
             ;;
