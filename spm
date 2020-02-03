@@ -73,14 +73,14 @@ EOF
 while :; do
     . "$conf_dir/config"
 
-    [ -d $sys_battery ] || {
+    [ -d "$sys_battery" ] || {
         printf -- "%s\n" "(SPM) Battery not detected."
         exit 1
     }
 
-    read -r batt_status < ${sys_battery}/status
+    read -r batt_status < "${sys_battery}/status"
 
-    read -r batt_percent < ${sys_battery}/capacity
+    read -r batt_percent < "${sys_battery}/capacity"
 
     case $batt_status in
         Discharging)
