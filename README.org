@@ -1,4 +1,4 @@
-* SPM
+* (SPM) Simple Power Manager
   Simple Power Manager is an easily programmable,
 lightweight alternative to gui / tray apps like xfce-power-manager
 
