@@ -75,7 +75,7 @@ EOF
 while :; do
     . "$conf_dir/config"
 
-    cat /sys/class/power_supply/BAT?/status || {
+    cat /sys/class/power_supply/BAT?/status > /dev/null || {
         printf -- "%s\n" "(SPM) Battery not detected."
         exit 1
     }
