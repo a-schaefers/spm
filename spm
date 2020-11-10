@@ -5,9 +5,6 @@ mkdir -p "${conf_dir:=${XDG_CONFIG_HOME:-$HOME/.config}/spm}/state"
 [ -f "$conf_dir/config" ] || {
     printf "(SPM) %s\n" "Default $conf_dir/config Created. Please modify it accordingly and run the script again."
     cat <<EOF > "$conf_dir/config"
-# power threshholds
-set -- 300 275 250 225 200 175 150 125 99 80 40 20 10 5
-
 # battery polling frequency
 sleep 10
 
@@ -21,46 +18,29 @@ notifycmd() { notify-send "Battery: \$batt_status \${batt_percent}%"; }
 backlightcmd="lux -S"            ; pct="%"                      #uncomment for lux
 
 discharging_hook() {
-    # 100+% batt_percentery
-    [ "$batt_percent" -gt 100 ] && {
-        \$backlightcmd 90\$pct
-    }
-
-    # 80-99% batt_percentery
-    [ "\$batt_percent" -lt 100 ] && [ "\$batt_percent" -gt 80 ] && {
-        notifycmd
-        \$backlightcmd 80\$pct
-    }
-
-    # 40-80% battery
-    [ "\$batt_percent" -lt 81 ] && [ "\$batt_percent" -gt 40 ] && {
-        notifycmd
-        \$backlightcmd 80\$pct
-    }
-
-    # 20-40% battery
-    [ "\$batt_percent" -lt 41 ] && [ "\$batt_percent" -gt 20 ] && {
-        notifycmd
-        \$backlightcmd 40\$pct
-    }
-
-    # 10-20% battery
-    [ "\$batt_percent" -lt 21 ] && [ "\$batt_percent" -gt 10 ] && {
-        notifycmd
-        \$backlightcmd 40\$pct
-    }
-
-    # 5-10% battery
-    [ "\$batt_percent" -lt 11 ] && [ "\$batt_percent" -gt 5 ] && {
-        notifycmd
-        \$backlightcmd 5\$pct
-    }
-
-    # 5% battery or less
-    [ "\$batt_percent" -lt 6 ] && {
-        notifycmd
-        \$backlightcmd 5\$pct
-    }
+    a=525
+    b=500
+    for i in {1..20};do
+        a="\$((\$a-25))"
+        b="\$((\$b-25))"
+        [ "\$batt_percent" -lt "\$a" ] && [ "\$batt_percent" -gt "\$b" ] && {
+            # > 25%, discharging
+            [ "\$batt_percent" -gt 25 ] && {
+                \$backlightcmd 80\$pct
+                notifycmd
+            }
+            # 10-25%, discharging
+            [ "\$batt_percent" -lt 25 ] && [ "\$batt_percent" -gt 10 ]&& {
+                \$backlightcmd 50\$pct
+                notifycmd
+            }
+            # < 10%, discharging
+            [ "\$batt_percent" -lt 10 ] && {
+                \$backlightcmd 10\$pct
+                notifycmd
+            }
+        }
+    done
 }
 
 charging_hook() {
@@ -91,20 +71,16 @@ while :; do
 
     case $batt_status in
         Discharging)
-            for state in "$@"; do
-                if [ "$batt_percent" -le "$state" ]; then
-                    [ -f "$conf_dir/state/$state" ] || {
-                        rm -f "$conf_dir/state/100"
-                        > "$conf_dir/state/$state"
-                        discharging_hook
-                    }
-                fi
-            done
+            [ -f "$conf_dir/state/Discharging" ] || {
+                rm -f "$conf_dir/state/Charging"
+                > "$conf_dir/state/Discharging"
+                discharging_hook
+            }
             ;;
         Charging)
-            [ -f "$conf_dir/state/100" ] || {
-                rm -f "$conf_dir/state"/*
-                > "$conf_dir/state/100"
+            [ -f "$conf_dir/state/Charging" ] || {
+                rm -f "$conf_dir/state/Discharging"
+                > "$conf_dir/state/Charging"
                 charging_hook
             }
             ;;
