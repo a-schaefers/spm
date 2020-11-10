@@ -18,12 +18,6 @@ notifycmd() { notify-send "Battery: \$batt_status \${batt_percent}%"; }
 backlightcmd="lux -S"            ; pct="%"                      #uncomment for lux
 
 discharging_hook() {
-    a=525
-    b=500
-    for i in {1..20};do
-        a="\$((\$a-25))"
-        b="\$((\$b-25))"
-        [ "\$batt_percent" -lt "\$a" ] && [ "\$batt_percent" -gt "\$b" ] && {
             # > 25%, discharging
             [ "\$batt_percent" -gt 25 ] && {
                 \$backlightcmd 80\$pct
@@ -39,8 +33,6 @@ discharging_hook() {
                 \$backlightcmd 10\$pct
                 notifycmd
             }
-        }
-    done
 }
 
 charging_hook() {
