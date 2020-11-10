@@ -5,11 +5,8 @@ mkdir -p "${conf_dir:=${XDG_CONFIG_HOME:-$HOME/.config}/spm}/state"
 [ -f "$conf_dir/config" ] || {
     printf "(SPM) %s\n" "Default $conf_dir/config Created. Please modify it accordingly and run the script again."
     cat <<EOF > "$conf_dir/config"
-# System battery directory
-sys_battery="/sys/class/power_supply/BAT0"
-
 # power threshholds
-set -- 99 80 40 20 10 5
+set -- 300 275 250 225 200 175 150 125 99 80 40 20 10 5
 
 # battery polling frequency
 sleep 10
@@ -24,6 +21,12 @@ notifycmd() { notify-send "Battery: \$batt_status \${batt_percent}%"; }
 backlightcmd="lux -S"            ; pct="%"                      #uncomment for lux
 
 discharging_hook() {
+    # 100+% batt_percentery
+    [ "$batt_percent" -gt 100 ] && {
+        notifycmd
+        \$backlightcmd 90\$pct
+    }
+
     # 80-99% batt_percentery
     [ "\$batt_percent" -lt 100 ] && [ "\$batt_percent" -gt 80 ] && {
         notifycmd
@@ -61,7 +64,7 @@ discharging_hook() {
     }
 }
 
-charging_or_full_hook() {
+charging_hook() {
     # battery Charging / Full
     notifycmd
     \$backlightcmd 100\$pct
@@ -73,14 +76,19 @@ EOF
 while :; do
     . "$conf_dir/config"
 
-    [ -d "$sys_battery" ] || {
+    cat /sys/class/power_supply/BAT?/status || {
         printf -- "%s\n" "(SPM) Battery not detected."
         exit 1
     }
 
-    read -r batt_status < "${sys_battery}/status"
+    unset batt_percent
+    for b in /sys/class/power_supply/BAT?; do batt_percent="$(($batt_percent+$(cat "$b/capacity")))"; done
 
-    read -r batt_percent < "${sys_battery}/capacity"
+    if grep -q Discharging /sys/class/power_supply/BAT?/status; then
+        batt_status=Discharging
+    else
+        batt_status=Charging
+    fi
 
     case $batt_status in
         Discharging)
@@ -94,11 +102,11 @@ while :; do
                 fi
             done
             ;;
-        Charging|Full)
+        Charging)
             [ -f "$conf_dir/state/100" ] || {
                 rm -f "$conf_dir/state"/*
                 > "$conf_dir/state/100"
-                charging_or_full_hook
+                charging_hook
             }
             ;;
     esac

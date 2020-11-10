@@ -2,5 +2,9 @@
   Simple Power Manager is an easily programmable,
 lightweight alternative to gui / tray apps like xfce-power-manager
 
+* News Mon 09 Nov 2020 07:28:10 PM PST
+
+  I updated the script to account for multiple laptop batteries.
+
 * Install
   Put spm somewhere on '$PATH'. The first run will generate a default config. Modify the default config accordingly and then fork it &
