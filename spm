@@ -23,7 +23,6 @@ backlightcmd="lux -S"            ; pct="%"                      #uncomment for l
 discharging_hook() {
     # 100+% batt_percentery
     [ "$batt_percent" -gt 100 ] && {
-        notifycmd
         \$backlightcmd 90\$pct
     }
 
